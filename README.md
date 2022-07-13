@@ -35,3 +35,11 @@ The gold labels can be one of three:
 * en
 * es
 * other
+
+### Preprocssing
+* Some rows in `[train|dev]_data.csv` include `"` resulting weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.
+* I've also checked the availability of the Null in those files with the following command:
+    ```bash
+    grep -Pa '\x00' data/train_data.tsv
+    grep -Pa '\x00' data/dev_data.tsv
+    ```

@@ -1,64 +1,11 @@
-import numpy as np
-import pandas as pd
-from collections import Counter
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
 torch.manual_seed(1)
 
-
-class Data:
-
-    @staticmethod
-    def readtsv(file):  # sourcery skip: identity-comprehension
-        df = pd.read_csv(
-            f"../data/{file}",
-            sep='\t',
-            quoting=3,
-            encoding='utf8',
-            header=None,
-            names=['tweet_id', 'user_id', 'start', 'end', 'token', 'label'])
-        df['tuple'] = list(zip(df['token'], df['label']))
-        tokens = df.groupby('tweet_id')['token'].apply(list).reset_index().set_index('tweet_id')
-        labels = df.groupby('tweet_id')['label'].apply(list).reset_index().set_index('tweet_id')
-        sentences = pd.concat([tokens, labels], axis=1)
-
-        return df, sentences
-
-    train, train_sentences = readtsv("train_data.tsv")
-    test, test_sentences = readtsv("dev_data.tsv")
-
-    # list of all characters in the vocabulary
-    Chars = set(Counter(''.join(train.token.values.tolist()))) #| set(Counter(''.join(test.token.values.tolist())))
-    # character embedding layer dimensionality
-    d = int(np.log2(len(Chars))) + 1
-
-
-    # list of all tokens and labels(=languages)
-    tokens = list(set(train.token.values))
-    labels = list(set(train.label.values))
-
-    # token to index and vice versa
-    tok2id = {"<PAD>":0, "<UNK>":1}
-    tok2id |= {t: i + 2 for i, t in enumerate(tokens)}
-    id2tok = {i: t for t,i in tok2id.items()}
-    # label to index and vice versa
-    lbl2id = {"<PAD>":0}
-    lbl2id |= {l: i + 1 for i, l in enumerate(labels)}
-    id2lbl = {i: l for l,i in lbl2id.items()}
-    # character to index and vice versa
-    chr2id = {"<PAD>":0, "<UNK>":1}
-    chr2id |= {l: i + 2 for i, l in enumerate(Chars)}
-    id2chr = {i: l for l,i in chr2id.items()}
-
-    __embedding = lambda dic, col: [[dic.get(t,1) for t in s] for s in col.values]
-    X_train_sentences_emb = __embedding(tok2id, train_sentences['token'])
-    Y_train_sentences_emb = __embedding(lbl2id, train_sentences['label'])
-    X_test_sentences_emb = __embedding(tok2id, test_sentences['token'])
-    Y_test_sentences_emb = __embedding(lbl2id, test_sentences['label'])
+from tqdm import tqdm
+from data import Data
 
 class BiLSTM(nn.Module):
 
@@ -79,5 +26,32 @@ class BiLSTM(nn.Module):
         embeds = self.word_embeddings(sentence)
         lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
-        tag_scores = F.log_softmax(tag_space, dim=1)
-        return tag_scores
+        return F.log_softmax(tag_space, dim=1)
+
+EMBEDDING_DIM = Data.d
+HIDDEN_DIM = 64
+
+model = BiLSTM(EMBEDDING_DIM, HIDDEN_DIM, len(Data.tok2id), len(Data.lbl2id))
+loss_function = nn.NLLLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.1)
+
+with torch.no_grad():
+    print( model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long)) )
+
+for epoch in tqdm(range(3)):  # again, normally you would NOT do 300 epochs, it is toy data
+    for sentence, label in tqdm(zip(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)):
+        # Step 1. Remember that Pytorch accumulates gradients.
+        # We need to clear them out before each instance
+        model.zero_grad()
+
+        # Step 3. Run our forward pass.
+        tag_scores = model(torch.tensor(sentence, dtype=torch.long))
+
+        # Step 4. Compute the loss, gradients, and update the parameters by
+        #  calling optimizer.step()
+        loss = loss_function(tag_scores, torch.tensor(label, dtype=torch.long))
+        loss.backward()
+        optimizer.step()
+
+with torch.no_grad():
+    print( model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long)) )

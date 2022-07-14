@@ -1,6 +1,16 @@
+from re import X
 import numpy as np
 import pandas as pd
 from collections import Counter
+
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torch.nn.utils.rnn import pad_sequence
+
+
+from config import CFG
+
+torch.manual_seed(CFG.seed)
 
 class Data:
 
@@ -39,7 +49,7 @@ class Data:
     id2tok = {i: t for t,i in tok2id.items()}
     # label to index and vice versa
     lbl2id = {"<PAD>":0}
-    lbl2id |= {l: i + 1 for i, l in enumerate(labels)}
+    lbl2id |= {l: i+1 for i, l in enumerate(labels)}
     id2lbl = {i: l for l,i in lbl2id.items()}
     # character to index and vice versa
     chr2id = {"<PAD>":0, "<UNK>":1}
@@ -51,3 +61,34 @@ class Data:
     Y_train_sentences_emb = __embedding(lbl2id, train_sentences['label'])
     X_test_sentences_emb = __embedding(tok2id, test_sentences['token'])
     Y_test_sentences_emb = __embedding(lbl2id, test_sentences['label'])
+
+
+class CodeSwitchDataset(Dataset):
+    def __init__(self, X, Y, train=True):
+        self.X = X
+        self.Y = Y
+        self.train = train
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.item()
+        return self.X[idx], self.Y[idx]
+
+train = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
+test = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
+
+def collate_fn(batch):
+    x,y = list(zip(*batch))
+    x = [torch.tensor(i, dtype=torch.long) for i in x]
+    y = [torch.tensor(i, dtype=torch.long) for i in y]
+    x = pad_sequence(x, batch_first=True)
+    y = pad_sequence(y, batch_first=True)
+    return x,y
+
+train_loader = torch.utils.data.DataLoader(train, batch_size=CFG.batch_size,
+                                        shuffle=True, collate_fn=collate_fn)
+test_loader = torch.utils.data.DataLoader(test, batch_size=CFG.batch_size,
+                                        shuffle=False, collate_fn=collate_fn)

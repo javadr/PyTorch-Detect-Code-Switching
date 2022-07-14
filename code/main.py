@@ -2,10 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-torch.manual_seed(1)
 
 from tqdm import tqdm
 from data import Data
+from config import CFG
+
+torch.manual_seed(CFG.seed)
 
 class BiLSTM(nn.Module):
 
@@ -17,10 +19,11 @@ class BiLSTM(nn.Module):
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim)
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim,
+                    batch_first=True, bidirectional=True)
 
         # The linear layer that maps from hidden state space to tag space
-        self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
+        self.hidden2tag = nn.Linear(hidden_dim*2, tagset_size)
 
     def forward(self, sentence):
         embeds = self.word_embeddings(sentence)
@@ -36,22 +39,26 @@ loss_function = nn.NLLLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.1)
 
 with torch.no_grad():
-    print( model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long)) )
+    out = model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long))
+    print( out, torch.argmax(out, axis=-1),
+            Data.Y_train_sentences_emb[0])
 
-for epoch in tqdm(range(3)):  # again, normally you would NOT do 300 epochs, it is toy data
+for _ in tqdm(range(10)):
+    model.train()  # again, normally you would NOT do 300 epochs, it is toy data
     for sentence, label in tqdm(zip(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)):
-        # Step 1. Remember that Pytorch accumulates gradients.
-        # We need to clear them out before each instance
         model.zero_grad()
-
-        # Step 3. Run our forward pass.
-        tag_scores = model(torch.tensor(sentence, dtype=torch.long))
-
-        # Step 4. Compute the loss, gradients, and update the parameters by
-        #  calling optimizer.step()
-        loss = loss_function(tag_scores, torch.tensor(label, dtype=torch.long))
+        scores = model(torch.tensor(sentence, dtype=torch.long))
+        loss = loss_function(scores, torch.tensor(label, dtype=torch.long))
         loss.backward()
         optimizer.step()
+    model.eval()
+    loss = 0
+    for sentence, label in tqdm(zip(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)):
+        scores = model(torch.tensor(sentence, dtype=torch.long))
+        loss = loss_function(scores, torch.tensor(label, dtype=torch.long))
+
 
 with torch.no_grad():
-    print( model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long)) )
+    out = model(torch.tensor(Data.X_train_sentences_emb[0], dtype=torch.long))
+    print( out, torch.argmax(out, axis=-1),
+            Data.Y_train_sentences_emb[0])

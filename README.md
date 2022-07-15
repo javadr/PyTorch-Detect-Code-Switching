@@ -44,3 +44,11 @@ The gold labels can be one of three:
     grep -Pa '\x00' data/dev_data.tsv
     ```
 * Another solution to the previous issue is the `quoting` option with `3` as its value which means `QUOTE_NONE`.
+
+## Installing dependencies
+
+You can use the `pip` program to install the dependencies on your own. They are all listed in the `requirements.txt` file.
+
+To use this method, you would proceed as:
+
+```pip install -r requirements.txt```

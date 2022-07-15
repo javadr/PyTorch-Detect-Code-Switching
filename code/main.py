@@ -25,10 +25,10 @@ class BiLSTMtagger(nn.Module):
         self.lstm = nn.LSTM(
             input_size  = embedding_dim,
             hidden_size = hidden_dim,
-            num_layers  = 1,
+            num_layers  = 2,
             batch_first = True,
             bidirectional = True,
-            # dropout     = 0.75
+            dropout     = 0.25
         )
         self.hidden2tag = nn.Linear(hidden_dim*2, tagset_size)
 

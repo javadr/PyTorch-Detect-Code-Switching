@@ -88,7 +88,7 @@ def collate_fn(batch):
     y = pad_sequence(y, batch_first=True)
     return x,y
 
-train_loader = torch.utils.data.DataLoader(train, batch_size=CFG.batch_size,
+train_loader = DataLoader(train, batch_size=CFG.batch_size,
                                         shuffle=True, collate_fn=collate_fn)
-test_loader = torch.utils.data.DataLoader(test, batch_size=CFG.batch_size,
+test_loader = DataLoader(test, batch_size=CFG.batch_size,
                                         shuffle=False, collate_fn=collate_fn)

@@ -1,3 +1,4 @@
+from os import access
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,6 +8,9 @@ from tqdm import tqdm
 from data import Data
 from config import CFG
 from sklearn.metrics import f1_score
+
+from rich import print
+from rich.progress import track
 
 torch.manual_seed(CFG.seed)
 
@@ -44,11 +48,12 @@ optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 #     print( out, torch.argmax(out, axis=-1),
 #             Data.Y_train_sentences_emb[0])
 
-for epoch in range(CFG.n_epochs):
+for epoch in tqdm(range(CFG.n_epochs)):
     model.train()  # again, normally you would NOT do 300 epochs, it is toy data
     avg_loss = 0
     train_targets, train_preds = [], []
-    for sentence, label in tqdm(zip(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)):
+    for sentence, label in track(zip(Data.X_train_sentences_emb, Data.Y_train_sentences_emb),
+                description="Training...", total=len(Data.X_train_sentences_emb), transient=True):
         model.zero_grad()
         scores = model(torch.tensor(sentence, dtype=torch.long))
         loss = loss_function(scores, torch.tensor(label, dtype=torch.long))
@@ -60,17 +65,20 @@ for epoch in range(CFG.n_epochs):
     model.eval()
     avg_val_loss = 0
     val_targets, val_preds = [], []
-    for sentence, label in tqdm(zip(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)):
+    for sentence, label in track(zip(Data.X_test_sentences_emb, Data.Y_test_sentences_emb),
+                description="Validating...", total=len(Data.X_test_sentences_emb), transient=True):
+        # progress.update(task2, advance=0.5)
         scores = model(torch.tensor(sentence, dtype=torch.long))
         avg_val_loss += loss_function(scores, torch.tensor(label, dtype=torch.long)).item()/len(Data.X_test_sentences_emb)
         val_targets.extend(label)
         val_preds.extend(scores.argmax(axis=-1).detach().numpy())
+    # progress.update(task3, advance=0.5)
     #Calculate F1-score
     train_f1 = f1_score(train_targets, train_preds, average='micro')
     val_f1   = f1_score(val_targets,   val_preds,   average='micro')
     width = len(str(CFG.n_epochs))
     print(f'\rEpoch {epoch+1:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}\
-,train_f1={train_f1:.4f}, val_f1={val_f1:.4f}')
+    ,train_f1={train_f1:.4f}, val_f1={val_f1:.4f}')
 
 # with torch.no_grad():
 #     out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))

@@ -1,3 +1,7 @@
+TODO:
+ * loss/f1_score plot
+ * dechipher the text from the output of network
+
 July 19, 2022
 
 July 15, 2022
@@ -18,7 +22,7 @@ Epoch 30/40, loss=0.0842, val_loss=0.6611    ,train_f1=0.9683, val_f1=0.8171
 Epoch 35/40, loss=0.0792, val_loss=0.6735    ,train_f1=0.9701, val_f1=0.8178
 Epoch 40/40, loss=0.0763, val_loss=0.6753    ,train_f1=0.9711, val_f1=0.8180
    ```
- * Adam optimizer work better, lr=1e-3, wd=1e-5, hidden_dim=128
+ * Adam+ReduceLROnPlateau, lr=1e-3, wd=1e-5, hidden_dim=128
  ```bash
 Epoch 1/7, loss=0.5991, val_loss=0.5572    ,train_f1=0.7311, val_f1=0.7483
 Epoch 2/7, loss=0.2947, val_loss=0.4787    ,train_f1=0.9005, val_f1=0.8266
@@ -28,6 +32,22 @@ Epoch 5/7, loss=0.1049, val_loss=0.3998    ,train_f1=0.9698, val_f1=0.8512
 Epoch 6/7, loss=0.0977, val_loss=0.3884    ,train_f1=0.9714, val_f1=0.8512
 Epoch 7/7, loss=0.0940, val_loss=0.3817    ,train_f1=0.9725, val_f1=0.8529
  ```
+ * Minibatches made a great leap: train_f1=0.97, val_f1=0.94
+ ```bash
+Epoch  1/40, loss=0.5998, val_loss=0.4027    ,train_f1=0.7502, val_f1=0.7768
+Epoch  2/40, loss=0.3764, val_loss=0.3790    ,train_f1=0.8179, val_f1=0.7971
+Epoch  3/40, loss=0.3242, val_loss=0.3561    ,train_f1=0.8501, val_f1=0.8307
+Epoch  4/40, loss=0.2618, val_loss=0.2922    ,train_f1=0.8861, val_f1=0.8741
+Epoch  5/40, loss=0.2209, val_loss=0.2553    ,train_f1=0.9065, val_f1=0.8931
+Epoch 10/40, loss=0.1291, val_loss=0.1723    ,train_f1=0.9460, val_f1=0.9291
+Epoch 15/40, loss=0.0892, val_loss=0.1429    ,train_f1=0.9616, val_f1=0.9419
+Epoch 20/40, loss=0.0665, val_loss=0.1471    ,train_f1=0.9675, val_f1=0.9409
+Epoch 25/40, loss=0.0510, val_loss=0.1481    ,train_f1=0.9715, val_f1=0.9397
+Epoch 30/40, loss=0.0420, val_loss=0.1676    ,train_f1=0.9742, val_f1=0.9397
+Epoch 35/40, loss=0.0359, val_loss=0.1756    ,train_f1=0.9755, val_f1=0.9386
+Epoch 40/40, loss=0.0323, val_loss=0.1934    ,train_f1=0.9765, val_f1=0.9403
+ ```
+
 July 14, 2022
  * Data Class improvement
     * several dictionaries to convert token,label,char to id and vice versa

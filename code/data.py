@@ -87,12 +87,12 @@ def collate_fn(batch):
     x = pad_sequence(x, batch_first=True)
     y = pad_sequence(y, batch_first=True)
     # print(x.shape, y.shape)
-    return x,y
+    return x, y
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
-                                        shuffle=True, collate_fn=collate_fn)
+                        shuffle=True, collate_fn=collate_fn, num_workers=4)
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
-                                        shuffle=False, collate_fn=collate_fn)
+                        shuffle=False, collate_fn=collate_fn, num_workers=4)
 
 # for sent, lbl in train_loader:
 #     print(sent.shape, lbl.shape)

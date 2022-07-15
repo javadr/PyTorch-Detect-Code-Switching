@@ -1,4 +1,3 @@
-collections
 numpy
 pandas
 rich

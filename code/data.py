@@ -77,18 +77,24 @@ class CodeSwitchDataset(Dataset):
             idx = idx.item()
         return self.X[idx], self.Y[idx]
 
-train = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
-test = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
+train_dataset = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
+test_dataset = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
 
 def collate_fn(batch):
     x,y = list(zip(*batch))
-    x = [torch.tensor(i, dtype=torch.long) for i in x]
-    y = [torch.tensor(i, dtype=torch.long) for i in y]
+    x = [torch.LongTensor(i) for i in x]
+    y = [torch.LongTensor(i) for i in y]
     x = pad_sequence(x, batch_first=True)
     y = pad_sequence(y, batch_first=True)
+    # print(x.shape, y.shape)
     return x,y
 
-train_loader = DataLoader(train, batch_size=CFG.batch_size,
+train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
                                         shuffle=True, collate_fn=collate_fn)
-test_loader = DataLoader(test, batch_size=CFG.batch_size,
+test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
                                         shuffle=False, collate_fn=collate_fn)
+
+# for sent, lbl in train_loader:
+#     print(sent.shape, lbl.shape)
+#     print(lbl)
+#     exit()

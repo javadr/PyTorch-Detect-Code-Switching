@@ -36,6 +36,27 @@ The gold labels can be one of three:
 * es
 * other
 
+### Data Distribution
+As it can be seen in the following table, data are imbalanced in both the training and test set. While the number of `English` tokens in training data is about 50%, the number of `Spanish` tokens prevails in the test set.
+| label | train | dev |
+| --- | --- | --- |
+| `en` | **46042** | 3028 |
+| `es` | 25563 | **4185** |
+| `other` | 20257 | 2370 |
+| sum | 91862 | 9583 |
+
+The number of tweets in the training set is `7400` and in the test set is `832`. The tweets in both sets are wholly from two disjoint groups. The training set includes tweets of 6 persons and the test set has 8 persons' tweets.
+| user id | train | dev |
+| :---: | :---: | :---: |
+| 1 | 1160520883 | 156036283 |
+| 2 | 1520815188 | 21327323 |
+| 3 | 1651154684 | 270181505 |
+| 4 | 169403434 | 28261811 |
+| 5 | 304724626 | 364263613 |
+| 6 | 336199483 | 382890691 |
+| 7 |  | 418322879 |
+| 8 |  | 76523773 |
+
 ### Preprocssing
 * Some rows in `[train|dev]_data.csv` include `"` resulting weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.
 * I've also checked the availability of the Null in those files with the following command:

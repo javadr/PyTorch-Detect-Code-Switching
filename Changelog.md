@@ -1,8 +1,15 @@
-TODO:
- * loss/f1_score plot
- * dechipher the text from the output of network
+July 18, 2022
 
-July 19, 2022
+July 16, 2022
+ * dechipher the text/label from the output of network
+
+ * tokens should be considered in the context, not as a collection of single tokens:
+ in the following `audio` is a Spanish token, not an English one.
+   > @andres_romero17 si , prometo hacer un audio :)
+
+   > other es other es es es es other
+ * loss/f1_score plot
+ ![plot](./images/plot[2207161342]-Ep40BiLSTM,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 July 15, 2022
  * Printing the loss for train/val set on the screen
@@ -47,6 +54,7 @@ Epoch 30/40, loss=0.0420, val_loss=0.1676    ,train_f1=0.9742, val_f1=0.9397
 Epoch 35/40, loss=0.0359, val_loss=0.1756    ,train_f1=0.9755, val_f1=0.9386
 Epoch 40/40, loss=0.0323, val_loss=0.1934    ,train_f1=0.9765, val_f1=0.9403
  ```
+ * BiLSTM with 2 layers and dropout prevents kind of overfitting
 
 July 14, 2022
  * Data Class improvement

@@ -2,6 +2,7 @@ from re import X
 import numpy as np
 import pandas as pd
 from collections import Counter
+from dataclasses import dataclass
 
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -12,6 +13,7 @@ from config import CFG
 
 torch.manual_seed(CFG.seed)
 
+@dataclass
 class Data:
 
     @staticmethod
@@ -62,6 +64,18 @@ class Data:
     X_test_sentences_emb = __embedding(tok2id, test_sentences['token'])
     Y_test_sentences_emb = __embedding(lbl2id, test_sentences['label'])
 
+    @staticmethod
+    def decipher_text(encoded_text):
+        return ' '.join([Data.id2tok.get(e,1) for e in encoded_text])
+
+    @staticmethod
+    def decipher_label(encoded_label):
+        return ' '.join([Data.id2lbl.get(e) for e in encoded_label])
+
+    @staticmethod
+    def encode_text(text):
+        return [[Data.chr2id.get(c,1) for c in token] for token in text.split(' ')]
+
 
 class CodeSwitchDataset(Dataset):
     def __init__(self, X, Y, train=True):
@@ -86,7 +100,6 @@ def collate_fn(batch):
     y = [torch.LongTensor(i) for i in y]
     x = pad_sequence(x, batch_first=True)
     y = pad_sequence(y, batch_first=True)
-    # print(x.shape, y.shape)
     return x, y
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
@@ -94,7 +107,15 @@ train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
                         shuffle=False, collate_fn=collate_fn, num_workers=4)
 
-# for sent, lbl in train_loader:
-#     print(sent.shape, lbl.shape)
-#     print(lbl)
-#     exit()
+if __name__ == "__main__":
+    # for sent, lbl in train_loader:
+    #     print(sent.shape, lbl.shape)
+    #     print(lbl)
+    #     break
+    for i in (7,):
+        et = Data.X_train_sentences_emb[i]
+        el = Data.Y_train_sentences_emb[i]
+        print(et, el, Data.decipher_text(et), Data.decipher_label(el), sep='\n')
+        print()
+
+    print(Data.encode_text('This is a book !'))

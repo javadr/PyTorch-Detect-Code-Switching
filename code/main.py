@@ -1,20 +1,54 @@
-from os import access
-from unicodedata import bidirectional
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from tqdm import tqdm
 from data import Data, train_dataset, test_dataset, train_loader, test_loader
 from config import CFG
 from sklearn.metrics import f1_score
 
+from tqdm import tqdm
 from rich import print
 from rich.progress import track
 
+import matplotlib.pyplot as plt
+from collections import defaultdict
+from datetime import datetime
+
 torch.manual_seed(CFG.seed)
+
+
+from datetime import datetime
+
+def res_plot(data, desc='', p=3):
+    legend=['Train','Test']
+    fig, axes = plt.subplots(1,2, figsize = (17,6), facecolor=(1,1,1))
+    for i,title in enumerate(['Loss', 'F1 Score']):
+        axes[i].set_ylabel(title)
+    epochs = len(data['train_loss'])
+
+    for idx, t in enumerate(['loss', 'f1']):
+        x = range(1,epochs+1)
+        ax = axes[idx]
+        axes[idx].set_xticks(x[::p])
+        title = 'Loss' if idx==0 else 'F1 Score'
+        ax.set_xlabel('epoch')
+        ax.set_title(title)
+        ax.plot(x, data[f'train_{t}'], '-o', label=legend[0])
+        ax.plot(x, data[f'val_{t}'], '-o', label=legend[1])
+        c = 0
+        for i,j in list(zip( [id for tup in [(i,i) for i in x[::p][:-1]] for id in tup],
+                    [item for tup in zip(data[f'train_{t}'][::p][:-1],data[f'val_{t}'][::p][:-1]) for item in tup] )):
+            ax.annotate(f"{j:.{p}f}", xy=(i,j), rotation=45, va='bottom', color=['g', 'k'][c:=(c+1)%2])
+        ax.annotate(f"{data[f'train_{t}'][-1]:.{max(4,p)}f}", xy=(epochs,data[f'train_{t}'][-1]), color='r')
+        ax.annotate(f"{data[f'val_{t}'][-1]:.{max(4,p)}f}", xy=(epochs,data[f'val_{t}'][-1]), color='r')
+        ax.legend()
+    metric_name = f'../images/plot[{datetime.now().strftime("%y%m%d%H%M")}]-Ep{epochs}{desc}.png'
+    fig.suptitle(desc, fontsize=16)
+    fig.savefig(metric_name, bbox_inches='tight', dpi=100)
+    plt.show()
+
 
 class BiLSTMtagger(nn.Module):
 
@@ -51,7 +85,9 @@ scheduler = ReduceLROnPlateau(optimizer, 'min', patience=150, factor=0.1, min_lr
 
 flatten = lambda tensor: tensor.view(-1).detach().numpy()
 
-for epoch in tqdm(range(CFG.n_epochs)):
+logs = defaultdict(list)
+
+for epoch in (range(CFG.n_epochs)):
 
     model.train()  # again, normally you would NOT do 300 epochs, it is toy data
     avg_loss = 0
@@ -72,7 +108,6 @@ for epoch in tqdm(range(CFG.n_epochs)):
     val_targets, val_preds = [], []
     for sentence, label in track(test_loader,
                 description="Validating...", total=len(test_loader), transient=True):
-
         scores = model(sentence)
         avg_val_loss += loss_function(scores.view(-1,scores.shape[-1]), label.view(-1)).item()/len(test_loader)
         val_targets.extend(flatten(label))
@@ -88,7 +123,15 @@ for epoch in tqdm(range(CFG.n_epochs)):
     print(f'\rEpoch {epoch+1:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}\
     ,train_f1={train_f1:.4f}, val_f1={val_f1:.4f}')
 
+    logs['train_loss'].append(avg_loss)
+    logs['val_loss'].append(avg_val_loss)
+    logs['train_f1'].append(train_f1)
+    logs['val_f1'].append(val_f1)
+
+res_plot(logs, desc="BiLSTM, 2Layers, Adam, lre-3, wde-5")
+
 with torch.no_grad():
     out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))
     print( torch.argmax(out, axis=-1).detach().numpy().tolist(),
             Data.Y_test_sentences_emb[14])
+

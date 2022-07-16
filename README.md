@@ -36,26 +36,45 @@ The gold labels can be one of three:
 * es
 * other
 
-### Data Distribution
-As it can be seen in the following table, data are imbalanced in both the training and test set. While the number of `English` tokens in training data is about 50%, the number of `Spanish` tokens prevails in the test set.
-| label | train | dev |
-| --- | --- | --- |
-| `en` | **46042** | 3028 |
-| `es` | 25563 | **4185** |
-| `other` | 20257 | 2370 |
-| sum | 91862 | 9583 |
+### Data Analysis
 
-The number of tweets in the training set is `7400` and in the test set is `832`. The tweets in both sets are wholly from two disjoint groups. The training set includes tweets of 6 persons and the test set has 8 persons' tweets.
-| user id | train | dev |
-| :---: | :---: | :---: |
-| 1 | 1160520883 | 156036283 |
-| 2 | 1520815188 | 21327323 |
-| 3 | 1651154684 | 270181505 |
-| 4 | 169403434 | 28261811 |
-| 5 | 304724626 | 364263613 |
-| 6 | 336199483 | 382890691 |
-| 7 |  | 418322879 |
-| 8 |  | 76523773 |
+* As it can be seen in the following table, data are imbalanced in both the training and test set. While the number of `English` tokens in training data is about 50%, the number of `Spanish` tokens prevails in the test set.
+
+    | label | train | dev |
+    | --- | --- | --- |
+    | `en` | **46042** | 3028 |
+    | `es` | 25563 | **4185** |
+    | `other` | 20257 | 2370 |
+    | sum | 91862 | 9583 |
+
+* The number of tweets in the training set is `7400` and in the test set is `832`. The tweets in both sets are wholly from two disjoint groups. The training set includes tweets of 6 persons and the test set has 8 persons' tweets.
+
+    | user id | train | dev |
+    | :---: | :---: | :---: |
+    | 1 | 1160520883 | 156036283 |
+    | 2 | 1520815188 | 21327323 |
+    | 3 | 1651154684 | 270181505 |
+    | 4 | 169403434 | 28261811 |
+    | 5 | 304724626 | 364263613 |
+    | 6 | 336199483 | 382890691 |
+    | 7 |  | 418322879 |
+    | 8 |  | 76523773 |
+* distribution of unique tokens and characters.
+    | | unique token | unique token (lower case) | unique characters |
+    | :---: | :---: | :---: | :---: |
+    | train | 14366 | 12220 | 50 |
+    | dev | 2771 | 2559 | 28
+* The distribution of the length of the tokens are depicted below which are taken by the following linux command:
+    ```bash
+    cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|R --slave -e 'x <- scan(file="stdin", quiet=TRUE,  what=list(numeric(), numeric())); png("Histogram of tokens length-train.png");plot(x[[1]],x[[2]], xlab="length", ylab="frequency", main="Train");'
+    ```
+    <img src="./images/Histogram%20of%20token%20length-train.png" alt="token length distribution in training set" width="45%"/>
+    <img src="./images/Histogram%20of%20token%20length-dev.png" alt="token length distribution in dev set" width="45%"/>
+
+    It is evident that both data sets have the same distribution of tokens' lengths with a slight shift. There are several outliers in both datasets as users tend to repeat the characters on social media. The weighted average tokens' lengths for the training and test sets are `3.93` and `4.11`, respectively. I've used the following to compute these numbers:
+    ```bash
+    cut -f5 ../data/train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|tr " " "*"|paste -sd+|bc -l
+    ```
 
 ### Preprocssing
 * Some rows in `[train|dev]_data.csv` include `"` resulting weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.

@@ -20,12 +20,11 @@ warnings.filterwarnings("ignore")
 
 torch.manual_seed(CFG.seed)
 
-EMBEDDING_DIM = Data.d
+EMBEDDING_DIM = CFG.out_ch2
 HIDDEN_DIM = 128
-VOCAB_SIZE = Data.token_vocab_size
-TAGSET_SIZE = Data.label_vocab_size
+TAGSET_SIZE = Data.label_vocab_size # en, es, other
 
-model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, VOCAB_SIZE, TAGSET_SIZE)
+model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE)
 loss_function = nn.CrossEntropyLoss()#nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
@@ -78,7 +77,7 @@ for epoch in (range(CFG.n_epochs+1)):
         logs['train_accuracy'].append(train_eval['accuracy'])
         logs['val_accuracy'].append(val_eval['accuracy'])
 
-res_plot(logs, desc="BiLSTM, 2Layers, Adam, lre-3, wde-5")
+res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")
 
 # with torch.no_grad():
 #     out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))

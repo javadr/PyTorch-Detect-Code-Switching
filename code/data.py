@@ -65,15 +65,16 @@ class Data:
     label_vocab_size = len(lbl2id)
 
 
-    __embedding_s = lambda dic, col: [[[dic.get(c,1) for c in w] for w in sent] for sent in col]
-    __embedding = lambda dic, col: [[dic.get(t,1) for t in s] for s in col]
+    embedding_s = lambda dic, data: [[[dic.get(c,1) for c in w]+[0]*(CFG.pad_length-len(w))
+                                        for w in sent] for sent in data]
+    embedding = lambda dic, data: [[dic.get(t,1) for t in s] for s in data]
 
-    X_train_sentences_emb = __embedding(tok2id, train_sentences['tokens'])
-    X_test_sentences_emb  = __embedding(tok2id, test_sentences['tokens'])
+    X_train_sentences_emb = embedding(tok2id, train_sentences['tokens'])
+    X_test_sentences_emb  = embedding(tok2id, test_sentences['tokens'])
     # X_train_sentences_emb = __embedding_s(chr2id, train_sentences['tokens'])
     # X_test_sentences_emb  = __embedding_s(chr2id, test_sentences['tokens'])
-    Y_train_sentences_emb = __embedding(lbl2id, train_sentences['labels'])
-    Y_test_sentences_emb  = __embedding(lbl2id, test_sentences['labels'])
+    Y_train_sentences_emb = embedding(lbl2id, train_sentences['labels'])
+    Y_test_sentences_emb  = embedding(lbl2id, test_sentences['labels'])
 
     @staticmethod
     def decipher_text(encoded_text):
@@ -102,13 +103,17 @@ class CodeSwitchDataset(Dataset):
             idx = idx.item()
         return self.X[idx], self.Y[idx]
 
-train_dataset = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
-test_dataset = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
-# train_dataset = CodeSwitchDataset(Data.train_sentences['tokens'], Data.train_sentences['labels'])
-# test_dataset = CodeSwitchDataset(Data.test_sentences['tokens'], Data.test_sentences['labels'])
+# train_dataset = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
+# test_dataset = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
+train_dataset = CodeSwitchDataset(Data.train_sentences['tokens'], Data.train_sentences['labels'])
+test_dataset = CodeSwitchDataset(Data.test_sentences['tokens'], Data.test_sentences['labels'])
+
+def word_encode(word):
+    x = torch.zeros(CFG.pad_length)
 
 def collate_fn(batch):
     x,y = list(zip(*batch)) # makes all sentences into x and all labels into y
+    x,y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
     x = [torch.LongTensor(i) for i in x]
     y = [torch.LongTensor(i) for i in y]
     x = pad_sequence(x, batch_first=True)
@@ -116,7 +121,7 @@ def collate_fn(batch):
     return x, y
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
-                        shuffle=True, collate_fn=collate_fn, num_workers=0)
+                        shuffle=False, collate_fn=collate_fn, num_workers=0)
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
                         shuffle=False, collate_fn=collate_fn, num_workers=0)
 
@@ -135,8 +140,7 @@ if __name__ == "__main__":
     # print(Data.encode_text('This is a book !'))
 
     for sent, lab in train_loader:
-        exit()
-        print(lab.shape, end=' ')
+        print(sent.shape[1], end=' ')
     # print('\n')
     # for sent, lab in test_loader:
     #     print(lab.shape[1], end=' ')

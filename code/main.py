@@ -22,8 +22,8 @@ torch.manual_seed(CFG.seed)
 
 EMBEDDING_DIM = Data.d
 HIDDEN_DIM = 128
-VOCAB_SIZE = len(Data.tok2id)
-TAGSET_SIZE = len(Data.lbl2id)
+VOCAB_SIZE = Data.token_vocab_size
+TAGSET_SIZE = Data.label_vocab_size
 
 model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, VOCAB_SIZE, TAGSET_SIZE)
 loss_function = nn.CrossEntropyLoss()#nn.NLLLoss()
@@ -68,8 +68,8 @@ for epoch in (range(CFG.n_epochs+1)):
 
     width = len(str(CFG.n_epochs))
     print(f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}\
-    ,f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}\
-    ,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}")
+ ,f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}\
+ ,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}")
     if epoch!=0:
         logs['train_loss'].append(avg_loss)
         logs['val_loss'].append(avg_val_loss)
@@ -80,8 +80,8 @@ for epoch in (range(CFG.n_epochs+1)):
 
 res_plot(logs, desc="BiLSTM, 2Layers, Adam, lre-3, wde-5")
 
-with torch.no_grad():
-    out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))
-    print( torch.argmax(out, axis=-1).detach().numpy().tolist(),
-            Data.Y_test_sentences_emb[14])
+# with torch.no_grad():
+#     out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))
+#     print( torch.argmax(out, axis=-1).detach().numpy().tolist(),
+#             Data.Y_test_sentences_emb[14])
 

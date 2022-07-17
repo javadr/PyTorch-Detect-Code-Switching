@@ -51,12 +51,17 @@ class Data:
     id2tok = {i: t for t,i in tok2id.items()}
     # label to index and vice versa
     lbl2id = {"<PAD>":0}
-    lbl2id |= {l: i+1 for i, l in enumerate(labels)}
+    lbl2id |= {l: i+1 for i, l in enumerate(sorted(labels))}
     id2lbl = {i: l for l,i in lbl2id.items()}
     # character to index and vice versa
     chr2id = {"<PAD>":0, "<UNK>":1}
     chr2id |= {l: i + 2 for i, l in enumerate(Chars)}
     id2chr = {i: l for l,i in chr2id.items()}
+
+    # vocabulary size
+    char_vocab_size = len(chr2id)
+    token_vocab_size = len(tok2id)
+    label_vocab_size = len(lbl2id)
 
     __embedding = lambda dic, col: [[dic.get(t,1) for t in s] for s in col.values]
     X_train_sentences_emb = __embedding(tok2id, train_sentences['token'])
@@ -112,9 +117,9 @@ if __name__ == "__main__":
     #     print(sent.shape, lbl.shape)
     #     print(lbl)
     #     break
-    for i in (7,):
-        et = Data.X_train_sentences_emb[i]
-        el = Data.Y_train_sentences_emb[i]
+    for i in (7,14):
+        et = Data.X_test_sentences_emb[i]
+        el = Data.Y_test_sentences_emb[i]
         print(et, el, Data.decipher_text(et), Data.decipher_label(el), sep='\n')
         print()
 

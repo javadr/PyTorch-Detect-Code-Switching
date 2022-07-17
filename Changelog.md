@@ -1,5 +1,9 @@
 July 18, 2022
 
+July 17, 2022
+ * F1 score with `weighted` average instead of `micro`.
+ * Char2Vec class
+
 July 16, 2022
  * dechipher the text/label from the output of network
 

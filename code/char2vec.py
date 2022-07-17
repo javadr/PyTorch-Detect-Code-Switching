@@ -2,12 +2,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.nn.utils.rnn import pad_sequence
 
 from config import CFG
 from data import Data
 # Set random seeds
 torch.manual_seed(CFG.seed)
-# torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.deterministic = True
 
 
 class Char2Vec(nn.Module):
@@ -29,15 +30,18 @@ class Char2Vec(nn.Module):
         )
 
     def forward(self, word):
-        word = torch.LongTensor([0,*[Data.chr2id[c] for c in word],0])
+        print(word)
+        word = pad_sequence(torch.LongTensor(word), batch_first=True)
+        print(word)
         embeds = self.embeds(word).transpose(-2,-1)
         conv1 = self.conv1(embeds)
         conv2, _ = self.conv2(conv1).max(dim=-1)
         lin = self.linear(conv2)
         return lin+conv2
 
-c2v = Char2Vec(Data.char_vocab_size, Data.d)
-print(c2v('Thisisisisi'))
+if __name__=="__main__":
+    c2v = Char2Vec(Data.char_vocab_size, Data.d)
+    print(c2v([torch.LongTensor([0, *[Data.chr2id[c] for c in t],0]).transpose(-1,0) for t in ['This', 'is']]))
 
 class BiLSTMtagger(nn.Module):
 

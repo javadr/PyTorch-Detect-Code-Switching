@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import f1_score, accuracy_score
 
+from data import CFG
+
 def res_plot(data, desc='', p=3):
     legend=['Train','Test']
     fig, axes = plt.subplots(1,2, figsize = (17,6), facecolor=(1,1,1))
@@ -25,7 +27,7 @@ def res_plot(data, desc='', p=3):
         ax.annotate(f"{data[f'train_{t}'][-1]:.{max(4,p)}f}", xy=(epochs,data[f'train_{t}'][-1]), color='r')
         ax.annotate(f"{data[f'val_{t}'][-1]:.{max(4,p)}f}", xy=(epochs,data[f'val_{t}'][-1]), color='r')
         ax.legend()
-    metric_name = f'../images/plot[{datetime.now().strftime("%y%m%d%H%M")}]-Ep{epochs}{desc}.png'
+    metric_name = f'../images/plot[{datetime.now().strftime("%y%m%d%H%M")}]-Ep{epochs}B{CFG.batch_size}{desc}.png'
     fig.suptitle(desc, fontsize=16)
     fig.savefig(metric_name, bbox_inches='tight', dpi=100)
     plt.show()

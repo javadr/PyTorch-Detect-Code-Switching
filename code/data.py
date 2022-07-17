@@ -29,9 +29,9 @@ class Data:
         df['tuple'] = list(zip(df['token'], df['label']))
         tokens = df.groupby('tweet_id')['token'].apply(list).reset_index().set_index('tweet_id')
         labels = df.groupby('tweet_id')['label'].apply(list).reset_index().set_index('tweet_id')
-        sentences = pd.concat([tokens, labels], axis=1)
+        sentences = pd.concat([tokens, labels], axis=1).rename(lambda c: c+'s', axis='columns')
 
-        return df, sentences
+        return df, {'tokens': sentences['tokens'].values, 'labels': sentences['labels'].values}
 
     train, train_sentences = readtsv("train_data.tsv")
     test, test_sentences = readtsv("dev_data.tsv")
@@ -64,11 +64,16 @@ class Data:
     token_vocab_size = len(tok2id)
     label_vocab_size = len(lbl2id)
 
-    __embedding = lambda dic, col: [[dic.get(t,1) for t in s] for s in col.values]
-    X_train_sentences_emb = __embedding(tok2id, train_sentences['token'])
-    Y_train_sentences_emb = __embedding(lbl2id, train_sentences['label'])
-    X_test_sentences_emb = __embedding(tok2id, test_sentences['token'])
-    Y_test_sentences_emb = __embedding(lbl2id, test_sentences['label'])
+
+    __embedding_s = lambda dic, col: [[[dic.get(c,1) for c in w] for w in sent] for sent in col]
+    __embedding = lambda dic, col: [[dic.get(t,1) for t in s] for s in col]
+
+    X_train_sentences_emb = __embedding(tok2id, train_sentences['tokens'])
+    X_test_sentences_emb  = __embedding(tok2id, test_sentences['tokens'])
+    # X_train_sentences_emb = __embedding_s(chr2id, train_sentences['tokens'])
+    # X_test_sentences_emb  = __embedding_s(chr2id, test_sentences['tokens'])
+    Y_train_sentences_emb = __embedding(lbl2id, train_sentences['labels'])
+    Y_test_sentences_emb  = __embedding(lbl2id, test_sentences['labels'])
 
     @staticmethod
     def decipher_text(encoded_text):
@@ -99,9 +104,11 @@ class CodeSwitchDataset(Dataset):
 
 train_dataset = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
 test_dataset = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
+# train_dataset = CodeSwitchDataset(Data.train_sentences['tokens'], Data.train_sentences['labels'])
+# test_dataset = CodeSwitchDataset(Data.test_sentences['tokens'], Data.test_sentences['labels'])
 
 def collate_fn(batch):
-    x,y = list(zip(*batch))
+    x,y = list(zip(*batch)) # makes all sentences into x and all labels into y
     x = [torch.LongTensor(i) for i in x]
     y = [torch.LongTensor(i) for i in y]
     x = pad_sequence(x, batch_first=True)
@@ -109,19 +116,27 @@ def collate_fn(batch):
     return x, y
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
-                        shuffle=True, collate_fn=collate_fn, num_workers=4)
+                        shuffle=True, collate_fn=collate_fn, num_workers=0)
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
-                        shuffle=False, collate_fn=collate_fn, num_workers=4)
+                        shuffle=False, collate_fn=collate_fn, num_workers=0)
 
 if __name__ == "__main__":
+    pass
     # for sent, lbl in train_loader:
     #     print(sent.shape, lbl.shape)
     #     print(lbl)
     #     break
-    for i in (7,14):
-        et = Data.X_test_sentences_emb[i]
-        el = Data.Y_test_sentences_emb[i]
-        print(et, el, Data.decipher_text(et), Data.decipher_label(el), sep='\n')
-        print()
 
-    print(Data.encode_text('This is a book !'))
+    # for i in (7,14):
+    #     et = Data.X_test_sentences_emb[i]
+    #     el = Data.Y_test_sentences_emb[i]
+    #     print(et, el, Data.decipher_text(et), Data.decipher_label(el), sep='\n')
+    #     print()
+    # print(Data.encode_text('This is a book !'))
+
+    for sent, lab in train_loader:
+        exit()
+        print(lab.shape, end=' ')
+    # print('\n')
+    # for sent, lab in test_loader:
+    #     print(lab.shape[1], end=' ')

@@ -1,4 +1,4 @@
-from re import X
+import re
 import numpy as np
 import pandas as pd
 from collections import Counter
@@ -25,6 +25,7 @@ class Data:
             encoding='utf8',
             header=None,
             names=['tweet_id', 'user_id', 'start', 'end', 'token', 'label'])
+        df['token'] = df['token'].apply(lambda t: re.sub(r'(.)\1{4,}',r'\1\1\1\1', t)[:CFG.pad_length])
         df['tuple'] = list(zip(df['token'], df['label']))
         tokens = df.groupby('tweet_id')['token'].apply(list).reset_index().set_index('tweet_id')
         labels = df.groupby('tweet_id')['label'].apply(list).reset_index().set_index('tweet_id')

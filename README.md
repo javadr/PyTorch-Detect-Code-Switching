@@ -84,6 +84,7 @@ The gold labels can be one of three:
     grep -Pa '\x00' data/dev_data.tsv
     ```
 * Another solution to the previous issue is the `quoting` option with `3` as its value which means `QUOTE_NONE`.
+* As it is mentioned in the paper, the data contains many long and repetitive character sequences such as “hahahaha...”. To deal with these, we restricted any sequence of repeating characters to at most five repetitions with a maximum length of 20 for each token.
 
 ## Installing dependencies
 

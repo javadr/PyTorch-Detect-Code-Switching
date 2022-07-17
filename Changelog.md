@@ -3,6 +3,7 @@ July 18, 2022
 July 17, 2022
  * F1 score with `weighted` average instead of `micro`.
  * Char2Vec class
+ * removing repetition in a token with more than 4 characters and truncation of any words to the length of at most 20 characters; ==> a slightly better result
 
 July 16, 2022
  * dechipher the text/label from the output of network

@@ -10,6 +10,9 @@ July 16, 2022
    > other es other es es es es other
  * loss/f1_score plot
  ![plot](./images/plot[2207161342]-Ep40BiLSTM,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+ * data analysis around tweets and their tokens/chars
+ * code sanitization
+
 
 July 15, 2022
  * Printing the loss for train/val set on the screen

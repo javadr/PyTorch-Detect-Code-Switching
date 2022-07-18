@@ -21,15 +21,23 @@ class Char2Vec(nn.Module):
             nn.ReLU(),
             nn.Dropout(.1),
         )
-        kernals = [3, 4, 5]
+        # self.convs1 = nn.ModuleList(
+        #     [
+        #         nn.Sequential(
+        #             nn.Conv1d(in_channels=embed_dim, out_channels=3*out_ch1, kernel_size=3),
+        #             nn.ReLU(),
+        #         )
+        #         for _ in range(3)
+        #     ]
+        # )
+        # self.drop = nn.Dropout(.25)
         self.convs2 = nn.ModuleList(
             [
                 nn.Sequential(
-                nn.Conv1d(out_ch1, out_ch2, kernel_size=k),
-                nn.ReLU(),
-                # nn.MaxPool1d(max_seq_length - k + 1)
+                    nn.Conv1d(out_ch1, out_ch2, kernel_size=k),
+                    nn.ReLU(),
                 )
-                for k in kernals
+                for k in [3, 4, 5]
             ]
         )
         # self.conv2 = nn.Sequential(
@@ -45,6 +53,8 @@ class Char2Vec(nn.Module):
         # word = pad_sequence(torch.LongTensor(word), batch_first=True)
         embeds = self.embeds(word).transpose(-2,-1)
         batch, sent, emb, seq = embeds.shape
+        # tmp = [cnn(embeds.view(-1, emb, seq)) for cnn in self.convs1]
+        # conv1 = self.drop( torch.cat(tmp, dim=1) )
         conv1 = self.conv1(embeds.view(-1, emb, seq))
         tmp = [cnn(conv1).max(dim=-1)[0].squeeze() for cnn in self.convs2]
         conv2 = torch.cat(tmp, dim=1)

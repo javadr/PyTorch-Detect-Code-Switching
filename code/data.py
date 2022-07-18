@@ -47,16 +47,16 @@ class Data:
     labels = list(set(train.label.values))
 
     # token to index and vice versa
-    tok2id = {"<PAD>":0, "<UNK>":1}
-    tok2id |= {t: i + 2 for i, t in enumerate(tokens)}
+    tok2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
+    tok2id |= {t: i + 4 for i, t in enumerate(tokens)}
     id2tok = {i: t for t,i in tok2id.items()}
     # label to index and vice versa
     lbl2id = {"<PAD>":0}
     lbl2id |= {l: i+1 for i, l in enumerate(sorted(labels))}
     id2lbl = {i: l for l,i in lbl2id.items()}
     # character to index and vice versa
-    chr2id = {"<PAD>":0, "<UNK>":1}
-    chr2id |= {l: i + 2 for i, l in enumerate(Chars)}
+    chr2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
+    chr2id |= {l: i + 4 for i, l in enumerate(Chars)}
     id2chr = {i: l for l,i in chr2id.items()}
 
     # vocabulary size
@@ -65,8 +65,8 @@ class Data:
     label_vocab_size = len(lbl2id)
 
 
-    embedding_s = lambda dic, data: [[[dic.get(c,1) for c in w]+[0]*(CFG.pad_length-len(w))
-                                        for w in sent] for sent in data]
+    embedding_s = lambda dic, data: [[ [dic["<S>"]]+[dic.get(c,1) for c in w]+[dic["</S>"]]\
+            +[0]*(CFG.pad_length-len(w)+1) for w in sent ] for sent in data ]
     embedding = lambda dic, data: [[dic.get(t,1) for t in s] for s in data]
 
     X_train_sentences_emb = embedding(tok2id, train_sentences['tokens'])
@@ -139,7 +139,8 @@ if __name__ == "__main__":
     # print(Data.encode_text('This is a book !'))
 
     for sent, lab in train_loader:
-        print(sent.shape[1], end=' ')
+        print(sent.shape, lab.shape, end=' ')
+        exit()
     # print('\n')
     # for sent, lab in test_loader:
     #     print(lab.shape[1], end=' ')

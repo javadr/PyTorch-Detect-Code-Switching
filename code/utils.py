@@ -40,6 +40,6 @@ def evaluation(y_true, y_pred, metrics):
     if "accuracy" in metrics:
         output["accuracy"] = accuracy_score(y_true, y_pred)
     if "f1" in metrics:
-        output["f1"] = f1_score(y_true, y_pred, average="weighted")
+        output["f1"] = f1_score(y_true, y_pred, average="macro")
     return output
 

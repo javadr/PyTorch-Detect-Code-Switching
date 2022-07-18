@@ -12,6 +12,7 @@ from char2vec import BiLSTMtagger
 from tqdm import tqdm
 from rich import print
 from rich.progress import track
+from datetime import datetime
 
 from collections import defaultdict
 
@@ -83,6 +84,6 @@ for epoch in (range(CFG.n_epochs+1)):
         best_val_score = val_eval['f1']
         best_model = model
 
-torch.save(model, f"../saved-models/model-{max(logs['val_f1']):.5f}.pth".replace('0.','.'))
+torch.save(model, f'../saved-models/model-[{datetime.now().strftime("%y%m%d%H%M")}]{max(logs["val_f1"]):.5f}.pth'.replace('0.','.'))
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")

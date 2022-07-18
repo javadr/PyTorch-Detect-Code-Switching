@@ -4,3 +4,4 @@ rich
 sklearn
 tqdm
 torch
+argparse

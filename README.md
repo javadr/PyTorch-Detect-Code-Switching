@@ -126,3 +126,27 @@ BiLSTMtagger(
   (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
 )
 ```
+
+## How to use the code
+
+### Training
+
+Just run `train.py` from `code` directory. It assumes that the `cwd` is in the `code` directory.
+
+### Prediction
+
+Launch `predict.py` with the following arguments:
+
+- `model`: path of the pre-trained model
+- `text`: input text
+
+Example usage:
+```bash
+python predict.py --model pretrained_model.pth --text="@lililium This is an audio book !"
+```
+
+*** CAVEAT: When the `predict.py` loads the saved model it doesnot work properly (I don't know why, it seems the weights are not save correcly), so It would be better to copy all the contents of `train.py` into the `Jupyter Notebook` and run the test. See the `predict.ipynb' ***
+
+## TODO
+ - [ ] Modify the code to run on GPU
+ - [ ] Fine tunning the model to find the best hyper-parameters

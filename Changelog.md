@@ -1,10 +1,15 @@
 TODO:
- * making some functions to feed an ordinary sentence by user.
  * running on the CoLab with GPU activated.
  * fine tunning to find the best parameters
+ * Most of the time the predicition of the first token is not correct.
+ * Issue with the last token.
+ * Using mask in computation of loss
 
 ===================================================================== July 18, 2022
-
+ * `predict.py` for the ordinary application.
+ ```python
+  python predict.py --text [sample text] --model [pretrained model]
+ ```
  * Since I've used F1_Score with micro average, I should mention here that the it means
  `micro-F1 = micro-precision = micro-recall = accuracy`, i.e. I've reported in all cases `accuray` not `f1-score`.
  From now on, I use `macro` average for `f1-score`. Therefore, the result would be more realistic now.

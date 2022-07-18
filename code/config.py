@@ -8,5 +8,5 @@ class CFG:
     lr: float = 1e-3 # learning rate
     wd: float = 1e-5 # weight dacay
     pad_length: int = 20 # If a word is longer than the pad_length it will be truncated.
-    out_ch1: int = 3*4
-    out_ch2: int = 5
+    out_ch1: int = 3*5
+    out_ch2: int = 7

@@ -2,7 +2,7 @@ TODO:
  * running on the CoLab with GPU activated.
  * fine tunning to find the best parameters
  * Most of the time the predicition of the first token is not correct.
- * Issue with the last token.
+ * Issue with the last token; seen as <PAD>!, solved awkwardly be adding another extra token.
  * Using mask in computation of loss
 
 ===================================================================== July 18, 2022

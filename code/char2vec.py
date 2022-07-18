@@ -5,7 +5,7 @@ import torch.optim as optim
 from torch.nn.utils.rnn import pad_sequence
 
 from config import CFG
-from data import Data, train_loader
+from data import Data
 # Set random seeds
 torch.manual_seed(CFG.seed)
 torch.backends.cudnn.deterministic = True
@@ -38,15 +38,6 @@ class Char2Vec(nn.Module):
         conv2, _ = self.conv2(conv1).max(dim=-1)
         lin = self.linear(conv2)
         return (lin+conv2).view(batch, sent, -1)
-
-if __name__=="__main__":
-    c2v = Char2Vec(Data.char_vocab_size, Data.d)
-    for sent, lab in train_loader:
-        em = c2v(sent)
-        print(em.shape)
-        print(em[0])
-        exit()
-    # print(c2v([torch.LongTensor([0, *[Data.chr2id[c] for c in t],0]).transpose(-1,0) for t in ['This', 'is']]))
 
 class BiLSTMtagger(nn.Module):
 

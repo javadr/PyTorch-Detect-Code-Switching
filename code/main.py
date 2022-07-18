@@ -78,9 +78,3 @@ for epoch in (range(CFG.n_epochs+1)):
         logs['val_accuracy'].append(val_eval['accuracy'])
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")
-
-# with torch.no_grad():
-#     out = model(torch.tensor(Data.X_test_sentences_emb[14], dtype=torch.long))
-#     print( torch.argmax(out, axis=-1).detach().numpy().tolist(),
-#             Data.Y_test_sentences_emb[14])
-

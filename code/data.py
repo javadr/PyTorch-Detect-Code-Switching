@@ -121,12 +121,11 @@ def collate_fn(batch):
     return x, y
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
-                        shuffle=False, collate_fn=collate_fn, num_workers=0)
+                        shuffle=True, collate_fn=collate_fn, num_workers=0)
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
                         shuffle=False, collate_fn=collate_fn, num_workers=0)
 
 if __name__ == "__main__":
-    pass
     # for sent, lbl in train_loader:
     #     print(sent.shape, lbl.shape)
     #     print(lbl)

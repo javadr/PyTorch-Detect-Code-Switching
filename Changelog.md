@@ -4,8 +4,16 @@ TODO:
  * fine tunning to find the best parameters
 
 ===================================================================== July 18, 2022
+
+ * Since I've used F1_Score with micro average, I should mention here that the it means
+ `micro-F1 = micro-precision = micro-recall = accuracy`, i.e. I've reported in all cases `accuray` not `f1-score`.
+ From now on, I use `macro` average for `f1-score`. Therefore, the result would be more realistic now.
+
+![plot](./images/plot[2207181658]-Ep14B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+
  * Saving the best model for prediction
  * multiple-width filter bank in the second layer of thc Char2Vec --> better result and less overfitting.
+
 ```python
 BiLSTMtagger(
   (word_embeddings): Char2Vec(
@@ -13,7 +21,7 @@ BiLSTMtagger(
     (conv1): Sequential(
       (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
       (1): ReLU()
-      (2): Dropout(p=0.1, inplace=False)
+      (2): Dropout(p=0.25, inplace=False)
     )
     (convs2): ModuleList(
       (0): Sequential(
@@ -42,6 +50,7 @@ BiLSTMtagger(
 ![plot](./images/plot[2207181333]-Ep14B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 ===================================================================== July 17, 2022
+
  * F1 score with `weighted` average instead of `micro`.
  * Char2Vec class
  * removing repetition in a token with more than 4 characters and truncation of any words to the length of at most 20 characters; ==> a slightly better result
@@ -72,7 +81,8 @@ BiLSTMtagger(
 ![plot](./images/plot[2207171959]-Ep40B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 
-July 16, 2022
+===================================================================== July 16, 2022
+
  * dechipher the text/label from the output of network
 
  * tokens should be considered in the context, not as a collection of single tokens:
@@ -89,6 +99,7 @@ July 16, 2022
 
 
 ===================================================================== July 15, 2022
+
  * Printing the loss for train/val set on the screen
  * computation of `f1_score` for both training and validation set shows the network convergence
  * SGD, lr=0.1, hidden_dim=64

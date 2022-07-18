@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from data import Data, train_dataset, test_dataset, train_loader, test_loader
+from data import Data, train_loader, test_loader
 from config import CFG
 from utils import *
 from char2vec import BiLSTMtagger
@@ -31,6 +31,8 @@ optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
 scheduler = ReduceLROnPlateau(optimizer, 'min', patience=150, factor=0.1, min_lr=1e-8)
 
 logs = defaultdict(list)
+
+best_val_score = 0
 
 for epoch in (range(CFG.n_epochs+1)):
 
@@ -76,5 +78,11 @@ for epoch in (range(CFG.n_epochs+1)):
         logs['val_f1'].append(val_eval['f1'])
         logs['train_accuracy'].append(train_eval['accuracy'])
         logs['val_accuracy'].append(val_eval['accuracy'])
+    # saving the best model
+    if best_val_score < val_eval['f1']:
+        best_val_score = val_eval['f1']
+        best_model = model
+
+torch.save(model, f"../saved-models/model-{max(logs['val_f1']):.5f}.pth".replace('0.','.'))
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")

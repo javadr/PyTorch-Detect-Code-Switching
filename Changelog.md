@@ -32,8 +32,9 @@ BiLSTMtagger(
 (lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
 (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
 )
+```
 
-![plot](./images/Char2Vec.pngplot[2207171959]-Ep40B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+![plot](./images/plot[2207171959]-Ep40B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 
 July 16, 2022

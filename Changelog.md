@@ -1,10 +1,45 @@
 TODO:
- * Saving the best model for prediction.
  * making some functions to feed an ordinary sentence by user.
  * running on the CoLab with GPU activated.
  * fine tunning to find the best parameters
 
 ===================================================================== July 18, 2022
+ * Saving the best model for prediction
+ * multiple-width filter bank in the second layer of thc Char2Vec --> better result and less overfitting.
+```python
+BiLSTMtagger(
+  (word_embeddings): Char2Vec(
+    (embeds): Embedding(298, 9)
+    (conv1): Sequential(
+      (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
+      (1): ReLU()
+      (2): Dropout(p=0.1, inplace=False)
+    )
+    (convs2): ModuleList(
+      (0): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(3,), stride=(1,))
+        (1): ReLU()
+      )
+      (1): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(4,), stride=(1,))
+        (1): ReLU()
+      )
+      (2): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(5,), stride=(1,))
+        (1): ReLU()
+      )
+    )
+    (linear): Sequential(
+      (0): Linear(in_features=15, out_features=15, bias=True)
+      (1): ReLU()
+    )
+  )
+  (lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
+  (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
+)
+```
+
+![plot](./images/plot[2207181333]-Ep14B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 ===================================================================== July 17, 2022
  * F1 score with `weighted` average instead of `micro`.

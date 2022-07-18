@@ -126,6 +126,32 @@ BiLSTMtagger(
   (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
 )
 ```
+#### Model Summary
+```bash
+=================================================================
+Layer (type:depth-idx)                   Param #
+=================================================================
+├─Char2Vec: 1-1                          --
+|    └─Embedding: 2-1                    2,700
+|    └─Sequential: 2-2                   --
+|    |    └─Conv1d: 3-1                  420
+|    |    └─ReLU: 3-2                    --
+|    |    └─Dropout: 3-3                 --
+|    └─ModuleList: 2-3                   --
+|    |    └─Sequential: 3-4              322
+|    |    └─Sequential: 3-5              427
+|    |    └─Sequential: 3-6              532
+|    └─Sequential: 2-4                   --
+|    |    └─Linear: 3-7                  462
+|    |    └─ReLU: 3-8                    --
+├─LSTM: 1-2                              549,888
+├─Linear: 1-3                            1,028
+=================================================================
+Total params: 555,779
+Trainable params: 555,779
+Non-trainable params: 0
+=================================================================
+```
 
 ## How to use the code
 

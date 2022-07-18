@@ -92,27 +92,37 @@ To use this method, you would proceed as:
 
 ```pip install -r requirements.txt```
 
-## Model
+## Model Architecture
 ![Char2Vec](./images/Char2Vec.png)
 ```python
 BiLSTMtagger(
-(word_embeddings): Char2Vec(
-    (embeds): Embedding(298, 9)
+  (word_embeddings): Char2Vec(
+    (embeds): Embedding(300, 9)
     (conv1): Sequential(
-    (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
-    (1): ReLU()
-    (2): Dropout(p=0.1, inplace=False)
+      (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
+      (1): ReLU()
+      (2): Dropout(p=0.1, inplace=False)
     )
-    (conv2): Sequential(
-    (0): Conv1d(12, 15, kernel_size=(3,), stride=(1,))
-    (1): ReLU()
+    (convs2): ModuleList(
+      (0): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(3,), stride=(1,))
+        (1): ReLU()
+      )
+      (1): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(4,), stride=(1,))
+        (1): ReLU()
+      )
+      (2): Sequential(
+        (0): Conv1d(12, 5, kernel_size=(5,), stride=(1,))
+        (1): ReLU()
+      )
     )
     (linear): Sequential(
-    (0): Linear(in_features=15, out_features=15, bias=True)
-    (1): ReLU()
+      (0): Linear(in_features=15, out_features=15, bias=True)
+      (1): ReLU()
     )
-)
-(lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
-(hidden2tag): Linear(in_features=256, out_features=4, bias=True)
+  )
+  (lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
+  (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
 )
 ```

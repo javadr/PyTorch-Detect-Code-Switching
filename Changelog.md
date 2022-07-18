@@ -1,9 +1,40 @@
-July 18, 2022
+TODO:
+ * Saving the best model for prediction.
+ * making some functions to feed an ordinary sentence by user.
+ * running on the CoLab with GPU activated.
+ * fine tunning to find the best parameters
 
-July 17, 2022
+===================================================================== July 18, 2022
+
+===================================================================== July 17, 2022
  * F1 score with `weighted` average instead of `micro`.
  * Char2Vec class
  * removing repetition in a token with more than 4 characters and truncation of any words to the length of at most 20 characters; ==> a slightly better result
+ * Char2Vec+BiLSTM finished, with f1=0.9549, val_f1=0.9443; another slight improvement in the model
+```python
+BiLSTMtagger(
+(word_embeddings): Char2Vec(
+    (embeds): Embedding(298, 9)
+    (conv1): Sequential(
+    (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
+    (1): ReLU()
+    (2): Dropout(p=0.1, inplace=False)
+    )
+    (conv2): Sequential(
+    (0): Conv1d(12, 15, kernel_size=(3,), stride=(1,))
+    (1): ReLU()
+    )
+    (linear): Sequential(
+    (0): Linear(in_features=15, out_features=15, bias=True)
+    (1): ReLU()
+    )
+)
+(lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
+(hidden2tag): Linear(in_features=256, out_features=4, bias=True)
+)
+
+![plot](./images/Char2Vec.pngplot[2207171959]-Ep40B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+
 
 July 16, 2022
  * dechipher the text/label from the output of network
@@ -14,12 +45,14 @@ July 16, 2022
 
    > other es other es es es es other
  * loss/f1_score plot
+
  ![plot](./images/plot[2207161342]-Ep40BiLSTM,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+
  * data analysis around tweets and their tokens/chars
  * code sanitization
 
 
-July 15, 2022
+===================================================================== July 15, 2022
  * Printing the loss for train/val set on the screen
  * computation of `f1_score` for both training and validation set shows the network convergence
  * SGD, lr=0.1, hidden_dim=64
@@ -64,14 +97,14 @@ Epoch 40/40, loss=0.0323, val_loss=0.1934    ,train_f1=0.9765, val_f1=0.9403
  ```
  * BiLSTM with 2 layers and dropout prevents kind of overfitting
 
-July 14, 2022
+===================================================================== July 14, 2022
  * Data Class improvement
     * several dictionaries to convert token,label,char to id and vice versa
     * making the coded sentences and their counterparts labels
  * LSTM class
  * `CodeSwitchDataset` as well as customized DataLoader
 
-July 13, 2022
+===================================================================== July 13, 2022
  * github repo initailization
  * reading the paper
  * starting the code with Data Class

@@ -15,9 +15,9 @@ def res_plot(data, desc='', p=3):
         x = range(1,epochs+1)
         ax = axes[idx]
         axes[idx].set_xticks(x[::p])
-        title = 'Loss' if idx==0 else 'F1 Score'
+        # title = 'Loss' if idx==0 else 'F1 Score'
+        # ax.set_title(title)
         ax.set_xlabel('epoch')
-        ax.set_title(title)
         ax.plot(x, data[f'train_{t}'], '-o', label=legend[0])
         ax.plot(x, data[f'val_{t}'], '-o', label=legend[1])
         c = 0

@@ -1,12 +1,7 @@
 # PyTorch-Detect-Code-Switching
 
 ## Task Description
-Currently, the research in NLP has been focusing on dealing with types of multilingual content. Thus, the first thing that we need to learn for working on different NLP tasks, such as Question Answering, is to identify the languages accurately on texts.
-
-### Required reading
-
-[1] https://homes.cs.washington.edu/~nasmith/papers/jaech+mulcaire+hathi+ostendorf+smith.lics16.pdf \
-[2] http://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
+Currently, the research in NLP has been focusing on dealing with types of multilingual content. Thus, the first thing that we need to learn for working on different NLP tasks, such as Question Answering, is to identify the languages accurately on texts. This repository implements the idea behind the paper [A Neural Model for Language Identification in Code-Switched Tweets](https://homes.cs.washington.edu/~nasmith/papers/jaech+mulcaire+hathi+ostendorf+smith.lics16.pdf)
 
 ## Data
 
@@ -20,7 +15,7 @@ This data is a collection of tweets; in particular,three files for the training 
 tweet_id, user_id, start, end, gold label
 ```
 
-* `tweets.tsv`
+* `tweets.tsv`:
 ```
 tweet_id, user_id, tweet text
 ```
@@ -85,6 +80,9 @@ The gold labels can be one of three:
     ```
 * Another solution to the previous issue is the `quoting` option with `3` as its value which means `QUOTE_NONE`.
 * As it is mentioned in the paper, the data contains many long and repetitive character sequences such as “hahahaha...”. To deal with these, we restricted any sequence of repeating characters to at most five repetitions with a maximum length of 20 for each token.
+    ```python
+    df['token'] = df['token'].apply(lambda t: re.sub(r'(.)\1{4,}',r'\1\1\1\1', t)[:20])
+    ```
 
 ## Installing dependencies
 
@@ -93,3 +91,28 @@ You can use the `pip` program to install the dependencies on your own. They are 
 To use this method, you would proceed as:
 
 ```pip install -r requirements.txt```
+
+## Model
+![Char2Vec](./images/Char2Vec.png)
+```python
+BiLSTMtagger(
+(word_embeddings): Char2Vec(
+    (embeds): Embedding(298, 9)
+    (conv1): Sequential(
+    (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
+    (1): ReLU()
+    (2): Dropout(p=0.1, inplace=False)
+    )
+    (conv2): Sequential(
+    (0): Conv1d(12, 15, kernel_size=(3,), stride=(1,))
+    (1): ReLU()
+    )
+    (linear): Sequential(
+    (0): Linear(in_features=15, out_features=15, bias=True)
+    (1): ReLU()
+    )
+)
+(lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
+(hidden2tag): Linear(in_features=256, out_features=4, bias=True)
+)
+```

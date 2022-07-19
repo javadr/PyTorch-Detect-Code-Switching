@@ -16,7 +16,6 @@ torch.manual_seed(CFG.seed)
 @dataclass
 class Data:
 
-    @staticmethod
     def readtsv(file):
         df = pd.read_csv(
             f"../data/{file}",

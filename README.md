@@ -97,23 +97,23 @@ To use this method, you would proceed as:
 ```python
 BiLSTMtagger(
   (word_embeddings): Char2Vec(
-    (embeds): Embedding(300, 9)
+    (embeds): Embedding(300, 9, padding_idx=0)
     (conv1): Sequential(
-      (0): Conv1d(9, 12, kernel_size=(3,), stride=(1,))
+      (0): Conv1d(9, 21, kernel_size=(3,), stride=(1,))
       (1): ReLU()
       (2): Dropout(p=0.1, inplace=False)
     )
     (convs2): ModuleList(
       (0): Sequential(
-        (0): Conv1d(12, 5, kernel_size=(3,), stride=(1,))
+        (0): Conv1d(21, 5, kernel_size=(3,), stride=(1,))
         (1): ReLU()
       )
       (1): Sequential(
-        (0): Conv1d(12, 5, kernel_size=(4,), stride=(1,))
+        (0): Conv1d(21, 5, kernel_size=(4,), stride=(1,))
         (1): ReLU()
       )
       (2): Sequential(
-        (0): Conv1d(12, 5, kernel_size=(5,), stride=(1,))
+        (0): Conv1d(21, 5, kernel_size=(5,), stride=(1,))
         (1): ReLU()
       )
     )
@@ -122,7 +122,7 @@ BiLSTMtagger(
       (1): ReLU()
     )
   )
-  (lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.25, bidirectional=True)
+  (lstm): LSTM(15, 128, num_layers=2, batch_first=True, dropout=0.3, bidirectional=True)
   (hidden2tag): Linear(in_features=256, out_features=4, bias=True)
 )
 ```
@@ -134,21 +134,21 @@ Layer (type:depth-idx)                   Param #
 ├─Char2Vec: 1-1                          --
 |    └─Embedding: 2-1                    2,700
 |    └─Sequential: 2-2                   --
-|    |    └─Conv1d: 3-1                  420
+|    |    └─Conv1d: 3-1                  588
 |    |    └─ReLU: 3-2                    --
 |    |    └─Dropout: 3-3                 --
 |    └─ModuleList: 2-3                   --
-|    |    └─Sequential: 3-4              322
-|    |    └─Sequential: 3-5              427
-|    |    └─Sequential: 3-6              532
+|    |    └─Sequential: 3-4              320
+|    |    └─Sequential: 3-5              425
+|    |    └─Sequential: 3-6              530
 |    └─Sequential: 2-4                   --
-|    |    └─Linear: 3-7                  462
+|    |    └─Linear: 3-7                  240
 |    |    └─ReLU: 3-8                    --
-├─LSTM: 1-2                              549,888
+├─LSTM: 1-2                              543,744
 ├─Linear: 1-3                            1,028
 =================================================================
-Total params: 555,779
-Trainable params: 555,779
+Total params: 549,575
+Trainable params: 549,575
 Non-trainable params: 0
 =================================================================
 ```
@@ -171,10 +171,14 @@ Example usage:
 python predict.py --model pretrained_model.pth --text="@lililium This is an audio book !"
 ```
 
-*** CAVEAT: When the `predict.py` loads the saved model it doesnot work properly (I don't know why, it seems the weights are not save correcly), so It would be better to copy all the contents of `train.py` into the `Jupyter Notebook` and run the test. See the `predict.ipynb' ***
+*** CAVEAT: When the `predict.py` loads the saved model, it does not work properly (I don't know why, it seems the weights are not save correcly), so It would be better to copy all the contents of `train.py` into the `Jupyter Notebook` and run the test. See the `predict.ipynb' ***
 
 # Result
- Running the model on the Google Colab with `Tesla T4 GPU` and 200 epochs, achieved the `validation f1-score` of 
+
+ Running the model on the Google Colab with `Tesla T4 GPU` and 100 epochs, achieved the `validation f1-score` of `0.92`.
+
+ ![plot](./images/plot[2207191218]-Ep100B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+
 ## TODO
  - [X] Modify the code to run on GPU
  - [ ] Fine tunning the model to find the best hyper-parameters

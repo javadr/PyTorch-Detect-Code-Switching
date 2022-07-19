@@ -10,6 +10,7 @@ TODO:
 ===================================================================== July 19, 2022
  * `padding_idx=0` for `nn.Embedding` layer.
  * CPU support; run and tested on Google Colab
+ * increasing dropout, out_ch1, out_ch2 to 0.3, 3*7, 3*5, respectively doesn't help so much (`f1-score` of `0.926` in comparison to `0.924`!), so I reverted them to the smaller size.
 
 ===================================================================== July 18, 2022
  * `predict.py` for the ordinary application.

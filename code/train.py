@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 
 torch.manual_seed(CFG.seed)
 
-EMBEDDING_DIM = 3*CFG.out_ch2
+EMBEDDING_DIM = CFG.out_ch2
 HIDDEN_DIM = 128
 TAGSET_SIZE = Data.label_vocab_size # en, es, other
 

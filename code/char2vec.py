@@ -34,7 +34,7 @@ class Char2Vec(nn.Module):
         self.convs2 = nn.ModuleList(
             [
                 nn.Sequential(
-                    nn.Conv1d(out_ch1, out_ch2, kernel_size=k),
+                    nn.Conv1d(out_ch1, out_ch2//3, kernel_size=k),
                     nn.ReLU(),
                 )
                 for k in [3, 4, 5]
@@ -45,7 +45,7 @@ class Char2Vec(nn.Module):
         #     nn.ReLU(),
         # )
         self.linear = nn.Sequential(
-            nn.Linear(3*out_ch2, 3*out_ch2),
+            nn.Linear(out_ch2, out_ch2),
             nn.ReLU(),
         )
 
@@ -75,7 +75,7 @@ class BiLSTMtagger(nn.Module):
             num_layers  = 2,
             batch_first = True,
             bidirectional = True,
-            dropout     = 0.25
+            dropout     = 0.3
         )
         self.hidden2tag = nn.Linear(hidden_dim*2, tagset_size)
 

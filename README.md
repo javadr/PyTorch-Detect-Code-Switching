@@ -173,6 +173,8 @@ python predict.py --model pretrained_model.pth --text="@lililium This is an audi
 
 *** CAVEAT: When the `predict.py` loads the saved model it doesnot work properly (I don't know why, it seems the weights are not save correcly), so It would be better to copy all the contents of `train.py` into the `Jupyter Notebook` and run the test. See the `predict.ipynb' ***
 
+# Result
+ Running the model on the Google Colab with `Tesla T4 GPU` and 200 epochs, achieved the `validation f1-score` of 
 ## TODO
- - [ ] Modify the code to run on GPU
+ - [X] Modify the code to run on GPU
  - [ ] Fine tunning the model to find the best hyper-parameters

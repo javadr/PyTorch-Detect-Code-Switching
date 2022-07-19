@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 from data import Data, train_loader, test_loader
 from config import CFG
@@ -25,7 +26,7 @@ EMBEDDING_DIM = 3*CFG.out_ch2
 HIDDEN_DIM = 128
 TAGSET_SIZE = Data.label_vocab_size # en, es, other
 
-model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE)
+model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE).to(device)
 loss_function = nn.CrossEntropyLoss()#nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
@@ -43,6 +44,8 @@ for epoch in (range(CFG.n_epochs+1)):
     if epoch!=0:
         for sentence, label in track(train_loader,
                     description="Training...", total=len(train_loader), transient=True):
+
+            sentence, label = sentence.to(device), label.to(device)
             model.zero_grad()
             scores = model(sentence)
             loss = loss_function(scores.view(-1,scores.shape[-1]), label.view(-1))
@@ -57,6 +60,7 @@ for epoch in (range(CFG.n_epochs+1)):
     val_targets, val_preds = [], []
     for sentence, label in track(test_loader,
                 description="Validating...", total=len(test_loader), transient=True):
+        sentence, label = sentence.to(device), label.to(device)
         scores = model(sentence)
         avg_val_loss += loss_function(scores.view(-1,scores.shape[-1]), label.view(-1)).item()/len(test_loader)
         val_targets.extend(flatten(label))
@@ -85,6 +89,6 @@ for epoch in (range(CFG.n_epochs+1)):
         best_model = model
 
 torch.save(best_model.state_dict(), f'../saved-models/model-[{datetime.now().strftime("%y%m%d%H%M")}]{max(logs["val_f1"]):.5f}.pth'.replace('0.','.'))
-torch.save(best_model.state_dict(), '../saved-models/lastmodel')
+torch.save(best_model.state_dict(), '../saved-models/bestmodel.pth')
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")

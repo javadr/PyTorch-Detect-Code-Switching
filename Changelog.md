@@ -1,9 +1,15 @@
 TODO:
- * running on the CoLab with GPU activated.
  * fine tunning to find the best parameters
  * Most of the time the predicition of the first token is not correct.
  * Issue with the last token; seen as <PAD>!, solved awkwardly be adding another extra token.
  * Using mask in computation of loss
+ * tensorboardX
+ * issue with padding the sequence
+ * confusion matrix
+
+===================================================================== July 19, 2022
+ * `padding_idx=0` for `nn.Embedding` layer.
+ * CPU support; run and tested on Google Colab
 
 ===================================================================== July 18, 2022
  * `predict.py` for the ordinary application.

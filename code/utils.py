@@ -33,7 +33,7 @@ def res_plot(data, desc='', p=3):
     plt.show()
 
 
-flatten = lambda tensor: tensor.view(-1).detach().numpy()
+flatten = lambda tensor: tensor.view(-1).detach().cpu().numpy()
 
 def evaluation(y_true, y_pred, metrics):
     output = {}

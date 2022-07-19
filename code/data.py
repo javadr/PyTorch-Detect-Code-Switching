@@ -44,19 +44,19 @@ class Data:
 
     # list of all tokens and labels(=languages)
     tokens = list(set(train.token.values))
-    labels = list(set(train.label.values))
+    labels = sorted(list(set(train.label.values)))
 
     # token to index and vice versa
     tok2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
-    tok2id |= {t: i + 4 for i, t in enumerate(tokens)}
+    tok2id.update({t: i + 4 for i, t in enumerate(tokens)})
     id2tok = {i: t for t,i in tok2id.items()}
     # label to index and vice versa
     lbl2id = {"<PAD>":0}
-    lbl2id |= {l: i+1 for i, l in enumerate(sorted(labels))}
+    lbl2id.update({l: i+1 for i, l in enumerate(labels)})
     id2lbl = {i: l for l,i in lbl2id.items()}
     # character to index and vice versa
     chr2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
-    chr2id |= {l: i + 4 for i, l in enumerate(Chars)}
+    chr2id.update({l: i + 4 for i, l in enumerate(Chars)})
     id2chr = {i: l for l,i in chr2id.items()}
 
     # vocabulary size

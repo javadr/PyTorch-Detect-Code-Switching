@@ -15,7 +15,7 @@ class Char2Vec(nn.Module):
     def __init__(self, vocab_size, embed_dim, out_ch1= CFG.out_ch1, out_ch2= CFG.out_ch2):
         super().__init__()
         self.out_ch1, self.out_ch2 = out_ch1, out_ch2
-        self.embeds = nn.Embedding(vocab_size, embed_dim) # first embedding layer for characters
+        self.embeds = nn.Embedding(vocab_size, embed_dim, padding_idx=0) # first embedding layer for characters
         self.conv1 = nn.Sequential(
             nn.Conv1d(in_channels=embed_dim, out_channels=out_ch1, kernel_size=3),
             nn.ReLU(),

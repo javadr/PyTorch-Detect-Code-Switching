@@ -7,6 +7,9 @@ TODO:
  * issue with padding the sequence
  * confusion matrix
 
+===================================================================== July 20, 2022
+ * Solved issue with prediction. Using the `set` to remove the redundant characters resulted in a new order in every run. To get rid of this issue, the `sorted` function guarantees that we have a unique order in each run. Another solution to this problem is to save the `chr2id` dictionary with the model and reload it during the prediction.
+
 ===================================================================== July 19, 2022
  * `padding_idx=0` for `nn.Embedding` layer.
  * CPU support; run and tested on Google Colab

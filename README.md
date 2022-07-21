@@ -171,8 +171,6 @@ Example usage:
 python predict.py --model pretrained_model.pth --text="@lililium This is an audio book !"
 ```
 
-*** CAVEAT: When the `predict.py` loads the saved model, it does not work properly (I don't know why, it seems the weights are not save correcly), so It would be better to copy all the contents of `train.py` into the `Jupyter Notebook` and run the test. See the `predict.ipynb' ***
-
 # Result
 
  Running the model on the Google Colab with `Tesla T4 GPU` and 100 epochs, achieved the `validation f1-score` of `0.92`.
@@ -181,4 +179,5 @@ python predict.py --model pretrained_model.pth --text="@lililium This is an audi
 
 ## TODO
  - [X] Modify the code to run on GPU
+ - [ ] Data augmentation
  - [ ] Fine tunning the model to find the best hyper-parameters

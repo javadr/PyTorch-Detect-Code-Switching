@@ -36,14 +36,14 @@ class Data:
     test, test_sentences = readtsv("dev_data.tsv")
 
     # list of all characters in the vocabulary
-    Chars = set(Counter(''.join(train.token.values.tolist()))) #| set(Counter(''.join(test.token.values.tolist())))
+    Chars = sorted(set(Counter(''.join(train.token.values.tolist())))) #| set(Counter(''.join(test.token.values.tolist())))
     # character embedding layer dimensionality
     d = int(np.log2(len(Chars))) + 1
 
 
     # list of all tokens and labels(=languages)
-    tokens = list(set(train.token.values))
-    labels = sorted(list(set(train.label.values)))
+    tokens = sorted(set(train.token.values))
+    labels = sorted(set(train.label.values))
 
     # token to index and vice versa
     tok2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}

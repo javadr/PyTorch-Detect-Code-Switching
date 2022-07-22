@@ -5,6 +5,7 @@ TODO:
  * Using mask in computation of loss
  * tensorboardX
  * issue with padding the sequence
+  * use PackedSequence class as well as pad_sequence, pack_padded_sequence and pad_packed_sequence objects.
  * confusion matrix
 
 ===================================================================== July 20, 2022

@@ -37,9 +37,6 @@ class Data:
 
     # list of all characters in the vocabulary
     Chars = sorted(set(Counter(''.join(train.token.values.tolist())))) #| set(Counter(''.join(test.token.values.tolist())))
-    # character embedding layer dimensionality
-    d = int(np.log2(len(Chars))) + 1
-
 
     # list of all tokens and labels(=languages)
     tokens = sorted(set(train.token.values))

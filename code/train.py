@@ -25,8 +25,9 @@ torch.manual_seed(CFG.seed)
 EMBEDDING_DIM = CFG.out_ch2
 HIDDEN_DIM = 128
 TAGSET_SIZE = Data.label_vocab_size # en, es, other
+CHAR_VOCAB_SIZE = len(Data.chr2id)
 
-model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE).to(device)
+model = BiLSTMtagger(CHAR_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE).to(device)
 loss_function = nn.CrossEntropyLoss()#nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)

@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.nn.utils.rnn import pad_sequence
+import numpy as np
 
 from config import CFG
 from data import Data
@@ -12,10 +13,11 @@ torch.backends.cudnn.deterministic = True
 
 
 class Char2Vec(nn.Module):
-    def __init__(self, vocab_size, embed_dim, out_ch1= CFG.out_ch1, out_ch2= CFG.out_ch2):
+    def __init__(self, char_vocab_size: int, out_ch1: int = CFG.out_ch1, out_ch2: int = CFG.out_ch2):
         super().__init__()
+        embed_dim = int(np.log2(char_vocab_size)) + 1
         self.out_ch1, self.out_ch2 = out_ch1, out_ch2
-        self.embeds = nn.Embedding(vocab_size, embed_dim, padding_idx=0) # first embedding layer for characters
+        self.embeds = nn.Embedding(char_vocab_size, embed_dim, padding_idx=0) # first embedding layer for characters
         self.conv1 = nn.Sequential(
             nn.Conv1d(in_channels=embed_dim, out_channels=out_ch1, kernel_size=3),
             nn.ReLU(),
@@ -64,11 +66,11 @@ class Char2Vec(nn.Module):
 
 class BiLSTMtagger(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, tagset_size):
+    def __init__(self, char_vocab_size: int, embedding_dim: int, hidden_dim: int, tagset_size: int):
         super().__init__()
         self.hidden_dim = hidden_dim
         # self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
-        self.word_embeddings = Char2Vec(Data.char_vocab_size, Data.d)
+        self.word_embeddings = Char2Vec(char_vocab_size)
         self.lstm = nn.LSTM(
             input_size  = embedding_dim,
             hidden_size = hidden_dim,

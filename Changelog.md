@@ -8,6 +8,11 @@ TODO:
   * use PackedSequence class as well as pad_sequence, pack_padded_sequence and pad_packed_sequence objects.
  * confusion matrix
 
+===================================================================== July 25, 2022
+ * `list` in `list(zip(*batch))` of `collate_fn` function was not necessary and just made the running time more.
+ * `.to(device)` inside the `collate_fn` to get rid of device migration inside the training phase.
+ * some retouchments in char2vec
+
 ===================================================================== July 20, 2022
  * Solved issue with prediction. Using the `set` to remove the redundant characters resulted in a new order in every run. To get rid of this issue, the `sorted` function guarantees that we have a unique order in each run. Another solution to this problem is to save the `chr2id` dictionary with the model and reload it during the prediction.
 

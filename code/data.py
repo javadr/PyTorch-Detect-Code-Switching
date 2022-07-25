@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 from config import CFG
 
@@ -111,13 +111,12 @@ def word_encode(word):
     x = torch.zeros(CFG.pad_length)
 
 def collate_fn(batch):
-    x,y = list(zip(*batch)) # makes all sentences into x and all labels into y
+    x,y = zip(*batch) # makes all sentences into x and all labels into y
+    sent_lens = torch.LongTensor([len(s) for s in x]).to(device)
     x,y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
-    x = [torch.LongTensor(i) for i in x]
-    y = [torch.LongTensor(i) for i in y]
-    x = pad_sequence(x, batch_first=True)
-    y = pad_sequence(y, batch_first=True)
-    return x, y
+    x = pad_sequence([torch.LongTensor(i).to(device) for i in x], batch_first=True)
+    y = pad_sequence([torch.LongTensor(i).to(device) for i in y], batch_first=True)
+    return x.to(device), y.to(device), sent_lens
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
                         shuffle=True, collate_fn=collate_fn, num_workers=0)

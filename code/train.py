@@ -42,10 +42,10 @@ for epoch in (range(CFG.n_epochs+1)):
     avg_loss = 0
     train_targets, train_preds = [], []
     if epoch!=0:
-        for sentence, label in track(train_loader,
+        for sentence, label, _ in track(train_loader,
                     description="Training...", total=len(train_loader), transient=True):
 
-            sentence, label = sentence.to(device), label.to(device)
+            # sentence, label = sentence.to(device), label.to(device)
             model.zero_grad()
             scores = model(sentence)
             loss = loss_function(scores.view(-1,scores.shape[-1]), label.view(-1))
@@ -58,9 +58,9 @@ for epoch in (range(CFG.n_epochs+1)):
     model.eval()
     avg_val_loss = 0
     val_targets, val_preds = [], []
-    for sentence, label in track(test_loader,
+    for sentence, label, _ in track(test_loader,
                 description="Validating...", total=len(test_loader), transient=True):
-        sentence, label = sentence.to(device), label.to(device)
+        # sentence, label = sentence.to(device), label.to(device)
         scores = model(sentence)
         avg_val_loss += loss_function(scores.view(-1,scores.shape[-1]), label.view(-1)).item()/len(test_loader)
         val_targets.extend(flatten(label))

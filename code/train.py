@@ -28,7 +28,7 @@ TARGET_SIZE = Data.label_vocab_size # en, es, other
 CHAR_VOCAB_SIZE = Data.char_vocab_size
 
 model = BiLSTMtagger(CHAR_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_DIM, TARGET_SIZE).to(device)
-loss_function = nn.CrossEntropyLoss(ignore_index=0)#nn.NLLLoss()
+loss_function = nn.CrossEntropyLoss(ignore_index=Data.label_vocab_size)#nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
 scheduler = ReduceLROnPlateau(optimizer, 'min', patience=150, factor=0.1, min_lr=1e-8)
@@ -46,8 +46,6 @@ for epoch in (range(CFG.n_epochs+1)):
     if epoch!=0:
         for sentence, label, sent_lens in track(train_loader,
                     description="Training...", total=len(train_loader), transient=True):
-
-            # sentence, label = sentence.to(device), label.to(device)
             model.zero_grad()
             scores = model(sentence)
             loss = loss_function(scores.view(-1,scores.shape[-1]), label.view(-1))
@@ -62,7 +60,6 @@ for epoch in (range(CFG.n_epochs+1)):
     val_targets, val_preds = [], []
     for sentence, label, sent_lens in track(test_loader,
                 description="Validating...", total=len(test_loader), transient=True):
-        # sentence, label = sentence.to(device), label.to(device)
         scores = model(sentence)
         avg_val_loss += loss_function(scores.view(-1,scores.shape[-1]), label.view(-1)).item()/len(test_loader)
         val_targets.extend(flatten(label, sent_lens))

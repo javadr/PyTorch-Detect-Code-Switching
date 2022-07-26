@@ -44,7 +44,6 @@ def flatten(tensor, sent_lens=None):
         return tensor.view(-1).detach().cpu().numpy()
     else:
         return torch.cat([tensor[i,:l] for i, l in enumerate(sent_lens)]).detach().cpu().numpy()
-        # return torch.LongTensor([tensor[i,:l] for i, l in enumerate(sent_lens)]).view(-1).detach().cpu().numpy()
 
 def evaluation(y_true, y_pred, metrics):
     output = {}

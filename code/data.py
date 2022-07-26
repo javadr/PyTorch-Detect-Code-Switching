@@ -47,8 +47,9 @@ class Data:
     tok2id.update({t: i + 4 for i, t in enumerate(tokens)})
     id2tok = {i: t for t,i in tok2id.items()}
     # label to index and vice versa
-    lbl2id = {"<PAD>":0}
-    lbl2id.update({l: i+1 for i, l in enumerate(labels)})
+    # lbl2id = {"<PAD>":0}
+    lbl2id = {l: i for i, l in enumerate(labels)}
+    lbl2id.update({"<PAD>":len(lbl2id)})
     id2lbl = {i: l for l,i in lbl2id.items()}
     # character to index and vice versa
     chr2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
@@ -58,7 +59,7 @@ class Data:
     # vocabulary size
     char_vocab_size = len(chr2id)
     token_vocab_size = len(tok2id)
-    label_vocab_size = len(lbl2id)
+    label_vocab_size = len(lbl2id)-1
 
 
     embedding_s = lambda dic, data: [[ [dic["<S>"]]+[dic.get(c,1) for c in w]+[dic["</S>"]]\
@@ -112,7 +113,7 @@ def collate_fn(batch):
     sent_lens = torch.LongTensor([len(s) for s in x]).to(device)
     x,y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
     x = pad_sequence([torch.LongTensor(i).to(device) for i in x], batch_first=True)
-    y = pad_sequence([torch.LongTensor(i).to(device) for i in y], batch_first=True)
+    y = pad_sequence([torch.LongTensor(i).to(device) for i in y], batch_first=True, padding_value=Data.label_vocab_size)
     return x.to(device), y.to(device), sent_lens
 
 train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,

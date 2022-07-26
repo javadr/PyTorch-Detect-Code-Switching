@@ -2,9 +2,12 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import f1_score, accuracy_score
 from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns, pandas as pd
+
 import torch
 
-from data import CFG, test_loader
+from config import CFG
+from data import test_loader, Data
 
 def res_plot(data, desc='', p=3):
     legend=['Train','Test']
@@ -56,6 +59,7 @@ def evaluation(y_true, y_pred, metrics):
 
 
 def cls_report(best_model):
+    """Classification report + Confusion Matrix"""
     y_test, y_pred = [] , []
 
     with torch.no_grad():
@@ -69,3 +73,11 @@ def cls_report(best_model):
     cr = classification_report(y_test, y_pred, target_names=Data.labels)
     print("Accuracy is :",ac)
     print(cr)
+
+    labels = pd.DataFrame(cm).applymap(lambda v: f"{v}" if v!=0 else f"")
+    plt.figure(figsize=(7,5))
+    sns.heatmap(cm, annot=labels, fmt='s',
+                xticklabels=Data.labels, yticklabels=Data.labels, linewidths=0.1 )
+    confmat_name = f'../images/ConfusionMatrix[{datetime.now().strftime("%y%m%d%H%M")}].png'
+    plt.savefig(confmat_name, dpi=100)
+    plt.show()

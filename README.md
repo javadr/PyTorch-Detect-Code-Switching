@@ -177,7 +177,23 @@ python predict.py --model pretrained_model.pth --text="@lililium This is an audi
 
  ![plot](./images/plot[2207191218]-Ep100B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
+### classification Report
+
+```bash
+              precision    recall  f1-score   support
+
+          en       0.93      0.93      0.93      3028
+          es       0.94      0.96      0.95      4185
+       other       0.95      0.90      0.93      2370
+
+    accuracy                           0.94      9583
+   macro avg       0.94      0.93      0.94      9583
+weighted avg       0.94      0.94      0.94      9583
+```
+
+### Confusion Matrix
+<img src="./images/ConfusionMatrix.png" alt="confusion matrix" width="45%"/>
+
 ## TODO
- - [X] Modify the code to run on GPU
  - [ ] Data augmentation
  - [ ] Fine tunning the model to find the best hyper-parameters

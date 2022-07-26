@@ -1,8 +1,6 @@
 TODO:
  * fine tunning to find the best parameters
- * Issue with the last token; seen as <PAD>!, solved awkwardly be adding another extra token.
  * tensorboardX
- * confusion matrix
 
 ===================================================================== July 26, 2022
  * `ignore_index=0` for `CrossEntropyLoss` to ignore the padding index. This option Specifies a target value that is ignored and does not contribute to the input gradient resulting in lower computation consumption and the more accurate `loss` and `f1-score` as without the `ignore_index` all the paddings are also included in the criteria.
@@ -11,6 +9,7 @@ TODO:
  * Now, the predicition of the first token is almost correct.
  * target_size is now 3 instead of 4 (to count the <PAD> token); actually, the loss function needs to be fed `ignore_index=target_size`.
  * Classification Report
+ * Confusion Matrix
 
 ===================================================================== July 25, 2022
  * `list` in `list(zip(*batch))` of `collate_fn` function was not necessary and just made the running time more.

@@ -28,7 +28,7 @@ TARGET_SIZE = Data.label_vocab_size # en, es, other
 CHAR_VOCAB_SIZE = Data.char_vocab_size
 
 model = BiLSTMtagger(CHAR_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_DIM, TARGET_SIZE).to(device)
-loss_function = nn.CrossEntropyLoss()#nn.NLLLoss()
+loss_function = nn.CrossEntropyLoss(ignore_index=0)#nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
 optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
 scheduler = ReduceLROnPlateau(optimizer, 'min', patience=150, factor=0.1, min_lr=1e-8)
@@ -37,13 +37,14 @@ logs = defaultdict(list)
 
 best_val_score = 0
 
+width = len(str(CFG.n_epochs))
 for epoch in (range(CFG.n_epochs+1)):
 
     model.train()  # again, normally you would NOT do 300 epochs, it is toy data
     avg_loss = 0
     train_targets, train_preds = [], []
     if epoch!=0:
-        for sentence, label, _ in track(train_loader,
+        for sentence, label, sent_lens in track(train_loader,
                     description="Training...", total=len(train_loader), transient=True):
 
             # sentence, label = sentence.to(device), label.to(device)
@@ -53,19 +54,19 @@ for epoch in (range(CFG.n_epochs+1)):
             loss.backward()
             optimizer.step()
             avg_loss += loss.item()/len(train_loader)
-            train_targets.extend(flatten(label))
-            train_preds.extend(flatten(scores.argmax(axis=-1)))
+            train_targets.extend(flatten(label, sent_lens))
+            train_preds.extend(flatten(scores.argmax(axis=-1), sent_lens))
 
     model.eval()
     avg_val_loss = 0
     val_targets, val_preds = [], []
-    for sentence, label, _ in track(test_loader,
+    for sentence, label, sent_lens in track(test_loader,
                 description="Validating...", total=len(test_loader), transient=True):
         # sentence, label = sentence.to(device), label.to(device)
         scores = model(sentence)
         avg_val_loss += loss_function(scores.view(-1,scores.shape[-1]), label.view(-1)).item()/len(test_loader)
-        val_targets.extend(flatten(label))
-        val_preds.extend(flatten(scores.argmax(axis=-1)))
+        val_targets.extend(flatten(label, sent_lens))
+        val_preds.extend(flatten(scores.argmax(axis=-1), sent_lens))
 
     scheduler.step(avg_val_loss)
 
@@ -73,10 +74,11 @@ for epoch in (range(CFG.n_epochs+1)):
     train_eval = evaluation(train_targets, train_preds, metrics=['f1', 'accuracy'])
     val_eval   = evaluation(val_targets,   val_preds,   metrics=['f1', 'accuracy'])
 
-    width = len(str(CFG.n_epochs))
-    print(f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}\
- ,f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}\
- ,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}")
+    if epoch<=5 or epoch%10==0:
+        print(f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}",
+                f",f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}",
+                f",,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}")
+
     if epoch!=0:
         logs['train_loss'].append(avg_loss)
         logs['val_loss'].append(avg_val_loss)

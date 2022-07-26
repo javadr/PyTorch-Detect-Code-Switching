@@ -66,7 +66,7 @@ class Char2Vec(nn.Module):
 
 class BiLSTMtagger(nn.Module):
 
-    def __init__(self, char_vocab_size: int, embedding_dim: int, hidden_dim: int, tagset_size: int):
+    def __init__(self, char_vocab_size: int, embedding_dim: int, hidden_dim: int, target_size: int):
         super().__init__()
         self.hidden_dim = hidden_dim
         # self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
@@ -79,7 +79,7 @@ class BiLSTMtagger(nn.Module):
             bidirectional = True,
             dropout     = 0.3
         )
-        self.hidden2tag = nn.Linear(hidden_dim*2, tagset_size)
+        self.hidden2tag = nn.Linear(hidden_dim*2, target_size)
 
     def forward(self, sentence):
         embeds = self.word_embeddings(sentence)

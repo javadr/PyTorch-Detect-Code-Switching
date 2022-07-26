@@ -120,8 +120,10 @@ train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
 test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
                         shuffle=False, collate_fn=collate_fn, num_workers=0)
 
+import utils
+
 if __name__ == "__main__":
-    # for sent, lbl in train_loader:
+    # for sent, lbl, _ in train_loader:
     #     print(sent.shape, lbl.shape)
     #     print(lbl)
     #     break
@@ -133,9 +135,12 @@ if __name__ == "__main__":
     #     print()
     # print(Data.encode_text('This is a book !'))
 
-    for sent, lab in train_loader:
-        print(sent.shape, lab.shape, end=' ')
+    for sent, lab, sent_lens in train_loader:
+        # print(sent.shape, lab.shape, sent_lens, sep='\n')
+        # print(sent, lab, sent_lens, sep='\n')
+        for item in utils.flatten(lab, sent_lens):
+            print(item, end=', ')
         exit()
     # print('\n')
-    # for sent, lab in test_loader:
+    # for sent, lab, _ in test_loader:
     #     print(lab.shape[1], end=' ')

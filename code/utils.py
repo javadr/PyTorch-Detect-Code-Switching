@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import f1_score, accuracy_score
+import torch
 
 from data import CFG
 
@@ -38,7 +39,12 @@ def res_plot(data, desc='', p=3):
     plt.show()
 
 
-flatten = lambda tensor: tensor.view(-1).detach().cpu().numpy()
+def flatten(tensor, sent_lens=None):
+    if sent_lens is None:
+        return tensor.view(-1).detach().cpu().numpy()
+    else:
+        return torch.cat([tensor[i,:l] for i, l in enumerate(sent_lens)]).detach().cpu().numpy()
+        # return torch.LongTensor([tensor[i,:l] for i, l in enumerate(sent_lens)]).view(-1).detach().cpu().numpy()
 
 def evaluation(y_true, y_pred, metrics):
     output = {}

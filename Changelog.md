@@ -1,12 +1,14 @@
 TODO:
  * fine tunning to find the best parameters
- * Most of the time the predicition of the first token is not correct.
  * Issue with the last token; seen as <PAD>!, solved awkwardly be adding another extra token.
- * Using mask in computation of loss
  * tensorboardX
- * issue with padding the sequence
-  * use PackedSequence class as well as pad_sequence, pack_padded_sequence and pad_packed_sequence objects.
  * confusion matrix
+
+===================================================================== July 26, 2022
+ * `ignore_index=0` for `CrossEntropyLoss` to ignore the padding index. This option Specifies a target value that is ignored and does not contribute to the input gradient resulting in lower computation consumption and the more accurate `loss` and `f1-score` as without the `ignore_index` all the paddings are also included in the criteria.
+ * Revision of `flatten` function applying the sentences' lengths in order to compute the loss more accurately.
+ * By these two modifications, the issue with padding seems solved.
+ * Now, the predicition of the first token is almost correct.
 
 ===================================================================== July 25, 2022
  * `list` in `list(zip(*batch))` of `collate_fn` function was not necessary and just made the running time more.

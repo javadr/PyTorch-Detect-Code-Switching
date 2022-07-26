@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report
 import torch
 
-from data import CFG
+from data import CFG, test_loader
 
 def res_plot(data, desc='', p=3):
     legend=['Train','Test']
@@ -53,3 +54,18 @@ def evaluation(y_true, y_pred, metrics):
         output["f1"] = f1_score(y_true, y_pred, average="macro")
     return output
 
+
+def cls_report(best_model):
+    y_test, y_pred = [] , []
+
+    with torch.no_grad():
+        for sentence, label, sent_lens in test_loader:
+            scores = best_model(sentence)
+            y_test.extend(flatten(label, sent_lens))
+            y_pred.extend(flatten(scores.argmax(axis=-1), sent_lens))
+
+    ac = accuracy_score(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+    cr = classification_report(y_test, y_pred, target_names=Data.labels)
+    print("Accuracy is :",ac)
+    print(cr)

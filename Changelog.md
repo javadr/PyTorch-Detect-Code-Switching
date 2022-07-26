@@ -10,6 +10,7 @@ TODO:
  * By these two modifications, the issue with padding seems solved.
  * Now, the predicition of the first token is almost correct.
  * target_size is now 3 instead of 4 (to count the <PAD> token); actually, the loss function needs to be fed `ignore_index=target_size`.
+ * Classification Report
 
 ===================================================================== July 25, 2022
  * `list` in `list(zip(*batch))` of `collate_fn` function was not necessary and just made the running time more.

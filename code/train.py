@@ -92,3 +92,5 @@ torch.save(best_model.state_dict(), f'../saved-models/model-[{datetime.now().str
 torch.save(best_model.state_dict(), '../saved-models/bestmodel.pth')
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")
+
+cls_report(best_model)

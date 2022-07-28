@@ -88,8 +88,8 @@ for epoch in (range(CFG.n_epochs+1)):
         best_val_score = val_eval['f1']
         best_model = model
 
-torch.save(best_model.state_dict(), f'../saved-models/model-[{datetime.now().strftime("%y%m%d%H%M")}]{max(logs["val_f1"]):.5f}.pth'.replace('0.','.'))
-torch.save(best_model.state_dict(), '../saved-models/bestmodel.pth')
+torch.save(best_model, f'../saved-models/model-[{datetime.now().strftime("%y%m%d%H%M")}]{max(logs["val_f1"]):.5f}.pth'.replace('0.','.'))
+torch.save(best_model, '../saved-models/bestmodel.pth')
 
 res_plot(logs, desc="BiLSTM+Char2Vec, 2Layers, Adam, lre-3, wde-5")
 

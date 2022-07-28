@@ -12,21 +12,15 @@ from rich import print
 import warnings
 warnings.filterwarnings("ignore")
 
-EMBEDDING_DIM = CFG.out_ch2
-HIDDEN_DIM = 128
-TAGSET_SIZE = Data.label_vocab_size # en, es, other
-
 def predict(args):
-    model = BiLSTMtagger(EMBEDDING_DIM, HIDDEN_DIM, TAGSET_SIZE).to(device)
-    state = torch.load(args.model, map_location=torch.device(device))
-    model.load_state_dict(state, strict=True)
+    model = torch.load(args.model, map_location=torch.device(device))
     model.eval()
     tokens = args.text.split()
-    x = Data.embedding_s(Data.chr2id, [['.']+tokens+['.']])
+    x = Data.embedding_s(Data.chr2id, [tokens])
     out = model(torch.LongTensor(x).to(device)).argmax(dim=-1)[0].tolist()
     labels = [Data.id2lbl[i] for i in out]
 
-    return labels[1:-1]
+    return labels[:]
 
 
 if __name__ == "__main__":
@@ -38,7 +32,7 @@ if __name__ == "__main__":
                         help="path for pre-trained model")
     parser.add_argument("--text",
                         type=str,
-                        default="@lililium This is an audio book !",
+                        default="@Lesambam lmao my sister .. xD",
                         help="text string")
 
     args = parser.parse_args()

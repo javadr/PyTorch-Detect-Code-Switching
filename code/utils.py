@@ -3,6 +3,7 @@ from datetime import datetime
 from sklearn.metrics import f1_score, accuracy_score
 from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns, pandas as pd
+import numpy as np
 
 import torch
 
@@ -74,10 +75,17 @@ def cls_report(best_model):
     print("Accuracy is :",ac)
     print(cr)
 
-    labels = pd.DataFrame(cm).applymap(lambda v: f"{v}" if v!=0 else f"")
     plt.figure(figsize=(7,5))
-    sns.heatmap(cm, annot=labels, fmt='s',
+    group_counts = [f"{value:0.0f}" for value in cm.flatten()]
+    group_percentages = [f"{value:.2%}" for value in cm.flatten()/np.sum(cm)]
+    labels = [f"{v1}\n\n{v2}" for v1, v2 in zip(group_counts,group_percentages)]
+    labels = np.asarray(labels).reshape(-1,len(Data.labels))
+    sns.heatmap(cm, annot=labels, fmt='s', cmap='Blues', cbar=False,
                 xticklabels=Data.labels, yticklabels=Data.labels, linewidths=0.1 )
+
+    plt.title("Confusion Matrix")
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
     confmat_name = f'../images/ConfusionMatrix[{datetime.now().strftime("%y%m%d%H%M")}].png'
     plt.savefig(confmat_name, dpi=100)
     plt.show()

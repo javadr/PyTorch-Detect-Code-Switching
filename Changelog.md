@@ -2,6 +2,10 @@ TODO:
  * fine tunning to find the best parameters
  * tensorboardX
 
+===================================================================== July 28, 2022
+ * Adding labels for Confusion Matrix axises
+ * Revision of confusion matrix's labels
+
 ===================================================================== July 26, 2022
  * `ignore_index=0` for `CrossEntropyLoss` to ignore the padding index. This option Specifies a target value that is ignored and does not contribute to the input gradient resulting in lower computation consumption and the more accurate `loss` and `f1-score` as without the `ignore_index` all the paddings are also included in the criteria.
  * Revision of `flatten` function applying the sentences' lengths in order to compute the loss more accurately.

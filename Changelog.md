@@ -2,6 +2,9 @@ TODO:
  * fine tunning to find the best parameters
  * tensorboardX
 
+===================================================================== Oct 12, 2022
+ * Make reproducible output by fixing seed for torch and numpy
+
 ===================================================================== July 28, 2022
  * Adding labels for Confusion Matrix axises
  * Revision of confusion matrix's labels
@@ -21,11 +24,11 @@ TODO:
  * some retouchments in char2vec
 
 ===================================================================== July 20, 2022
- * Solved issue with prediction. Using the `set` to remove the redundant characters resulted in a new order in every run. To get rid of this issue, the `sorted` function guarantees that we have a unique order in each run. Another solution to this problem is to save the `chr2id` dictionary with the model and reload it during the prediction.
+ * Solved issue with prediction. Using the `set` to remove the redundant characters resulted in a new order in each run. To get rid of this issue, the `sorted` function guarantees that we have a unique order. Another solution to this problem is to save the `chr2id` dictionary with the model and reload it during the prediction.
 
 ===================================================================== July 19, 2022
  * `padding_idx=0` for `nn.Embedding` layer.
- * CPU support; run and tested on Google Colab
+ * GPU support; run and tested on Google Colab
  * increasing dropout, out_ch1, out_ch2 to 0.3, 3*7, 3*5, respectively doesn't help so much (`f1-score` of `0.926` in comparison to `0.924`!), so I reverted them to the smaller size.
 
 ===================================================================== July 18, 2022
@@ -33,14 +36,14 @@ TODO:
  ```python
   python predict.py --text [sample text] --model [pretrained model]
  ```
- * Since I've used F1_Score with micro average, I should mention here that the it means
+ * Since I've used F1_Score with micro average, I should mention here that it means
  `micro-F1 = micro-precision = micro-recall = accuracy`, i.e. I've reported in all cases `accuray` not `f1-score`.
  From now on, I use `macro` average for `f1-score`. Therefore, the result would be more realistic now.
 
 ![plot](./images/plot[2207181658]-Ep14B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
  * Saving the best model for prediction
- * multiple-width filter bank in the second layer of thc Char2Vec --> better result and less overfitting.
+ * multiple-width filter bank in the second layer of the Char2Vec --> better result and less overfitting.
 
 ```python
 BiLSTMtagger(

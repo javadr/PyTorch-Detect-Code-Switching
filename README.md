@@ -59,7 +59,7 @@ The gold labels can be one of three:
     | :---: | :---: | :---: | :---: |
     | train | 14366 | 12220 | 50 |
     | dev | 2771 | 2559 | 28
-* The distribution of the length of the tokens are depicted below which are taken by the following linux command:
+* The distribution of the length of the tokens are depicted below which are taken by the following one-liner linux command:
     ```bash
     cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|R --slave -e 'x <- scan(file="stdin", quiet=TRUE,  what=list(numeric(), numeric())); png("Histogram of tokens length-train.png");plot(x[[1]],x[[2]], xlab="length", ylab="frequency", main="Train");'
     ```
@@ -68,7 +68,7 @@ The gold labels can be one of three:
 
     It is evident that both data sets have the same distribution of tokens' lengths with a slight shift. There are several outliers in both datasets as users tend to repeat the characters on social media. The weighted average tokens' lengths for the training and test sets are `3.93` and `4.11`, respectively. I've used the following to compute these numbers:
     ```bash
-    cut -f5 ../data/train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|tr " " "*"|paste -sd+|bc -l
+    cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|tr " " "*"|paste -sd+|bc -l
     ```
 
 ### Preprocssing

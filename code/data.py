@@ -11,7 +11,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 from config import CFG
 
+# To make a reproducible output
+np.random.seed(CFG.seed)
 torch.manual_seed(CFG.seed)
+torch.cuda.manual_seed_all(CFG.seed)
 
 @dataclass
 class Data:

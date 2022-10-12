@@ -20,7 +20,10 @@ from collections import defaultdict
 import warnings
 warnings.filterwarnings("ignore")
 
+# To make a reproducible output
+np.random.seed(CFG.seed)
 torch.manual_seed(CFG.seed)
+torch.cuda.manual_seed_all(CFG.seed)
 
 EMBEDDING_DIM = CFG.out_ch2
 HIDDEN_DIM = 128

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -11,6 +12,11 @@ import argparse
 from rich import print
 import warnings
 warnings.filterwarnings("ignore")
+
+# To make a reproducible output
+np.random.seed(CFG.seed)
+torch.manual_seed(CFG.seed)
+torch.cuda.manual_seed_all(CFG.seed)
 
 def predict(args):
     model = torch.load(args.model, map_location=torch.device(device))

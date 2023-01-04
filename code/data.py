@@ -71,8 +71,6 @@ class Data:
 
     X_train_sentences_emb = embedding(tok2id, train_sentences['tokens'])
     X_test_sentences_emb  = embedding(tok2id, test_sentences['tokens'])
-    # X_train_sentences_emb = __embedding_s(chr2id, train_sentences['tokens'])
-    # X_test_sentences_emb  = __embedding_s(chr2id, test_sentences['tokens'])
     Y_train_sentences_emb = embedding(lbl2id, train_sentences['labels'])
     Y_test_sentences_emb  = embedding(lbl2id, test_sentences['labels'])
 
@@ -103,8 +101,6 @@ class CodeSwitchDataset(Dataset):
             idx = idx.item()
         return self.X[idx], self.Y[idx]
 
-# train_dataset = CodeSwitchDataset(Data.X_train_sentences_emb, Data.Y_train_sentences_emb)
-# test_dataset = CodeSwitchDataset(Data.X_test_sentences_emb, Data.Y_test_sentences_emb)
 train_dataset = CodeSwitchDataset(Data.train_sentences['tokens'], Data.train_sentences['labels'])
 test_dataset = CodeSwitchDataset(Data.test_sentences['tokens'], Data.test_sentences['labels'])
 

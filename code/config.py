@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 from dataclasses import dataclass
+
 @dataclass
 class CFG:
     max_sentence_len: int = 50

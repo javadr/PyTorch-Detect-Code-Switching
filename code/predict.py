@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
+import argparse
+import warnings
+
 import numpy as np
 import torch
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-from data import Data
-from config import CFG
-from char2vec import BiLSTMtagger
-
-import argparse
 from rich import print
-import warnings
+
+from config import CFG
+from data import Data
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 warnings.filterwarnings("ignore")
 
 # To make a reproducible output
@@ -32,14 +32,18 @@ def predict(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         "Testing a pretrained Character Based CNN+BiLSTM for Code-Switching")
-    parser.add_argument("--model",
-                        type=str,
-                        default="../saved-models/bestmodel.pth",
-                        help="path for pre-trained model")
-    parser.add_argument("--text",
-                        type=str,
-                        default="@Lesambam lmao my sister .. xD",
-                        help="text string")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="../saved-models/bestmodel.pth",
+        help="path for pre-trained model",
+    )
+    parser.add_argument(
+        "--text",
+        type=str,
+        default="@Lesambam lmao my sister .. xD",
+        help="text string",
+    )
 
     args = parser.parse_args()
     labels = predict(args)

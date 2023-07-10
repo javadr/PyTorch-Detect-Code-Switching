@@ -1,20 +1,29 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+#!/usr/bin/env python3
+
 import numpy as np
+import torch
+import torch.nn.functional as F
+from torch import nn
 
 from config import CFG
+
 # Set random seeds
 torch.manual_seed(CFG.seed)
 torch.backends.cudnn.deterministic = True
 
 
 class Char2Vec(nn.Module):
-    def __init__(self, char_vocab_size: int, out_ch1: int = CFG.out_ch1, out_ch2: int = CFG.out_ch2):
+    def __init__(
+            self,
+            char_vocab_size: int,
+            out_ch1: int = CFG.out_ch1,
+            out_ch2: int = CFG.out_ch2
+        ):
         super().__init__()
         embed_dim = int(np.log2(char_vocab_size)) + 1
         self.out_ch1, self.out_ch2 = out_ch1, out_ch2
-        self.embeds = nn.Embedding(char_vocab_size, embed_dim, padding_idx=0) # first embedding layer for characters
+        # first embedding layer for characters
+        self.embeds = nn.Embedding(char_vocab_size, embed_dim, padding_idx=0)
         self.conv1 = nn.Sequential(
             nn.Conv1d(in_channels=embed_dim, out_channels=out_ch1, kernel_size=3),
             nn.ReLU(),
@@ -45,7 +54,13 @@ class Char2Vec(nn.Module):
 
 class BiLSTMtagger(nn.Module):
 
-    def __init__(self, char_vocab_size: int, embedding_dim: int, hidden_dim: int, target_size: int):
+    def __init__(
+            self,
+            char_vocab_size: int,
+            embedding_dim: int,
+            hidden_dim: int,
+            target_size: int
+        ):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.word_embeddings = Char2Vec(char_vocab_size)
@@ -63,4 +78,4 @@ class BiLSTMtagger(nn.Module):
         embeds = self.word_embeddings(sentence)
         lstm_out, _ = self.lstm(embeds)
         tag_space = self.hidden2tag(lstm_out)
-        return F.log_softmax(tag_space, dim=1)#.argmax(axis=-1)
+        return F.log_softmax(tag_space, dim=1)

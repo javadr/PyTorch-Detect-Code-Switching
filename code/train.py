@@ -1,27 +1,22 @@
 #!/usr/bin/env python3
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-from data import Data, train_loader, test_loader
-from config import CFG
-from utils import *
-from char2vec import BiLSTMtagger
-
-from tqdm import tqdm
-from rich import print
-from rich.progress import track
+import warnings
+from collections import defaultdict
 from datetime import datetime
 
-from collections import defaultdict
+import torch
+from torch import nn
+from torch import optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from rich import print
+from rich.progress import track
 
-import warnings
+from utils import *
+from config import CFG
+from char2vec import BiLSTMtagger
+from data import Data, test_loader, train_loader
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 warnings.filterwarnings("ignore")
 
 # To make a reproducible output
@@ -39,12 +34,18 @@ model = BiLSTMtagger(CHAR_VOCAB_SIZE, EMBEDDING_DIM, HIDDEN_DIM,
 loss_function = nn.CrossEntropyLoss(
     ignore_index=Data.label_vocab_size)  #nn.NLLLoss()
 # optimizer = optim.SGD(model.parameters(), lr=CFG.lr)
-optimizer = optim.Adam(model.parameters(), lr=CFG.lr, weight_decay=CFG.wd)
-scheduler = ReduceLROnPlateau(optimizer,
-                            'min',
-                            patience=150,
-                            factor=0.1,
-                            min_lr=1e-8)
+optimizer = optim.Adam(
+    model.parameters(),
+    lr=CFG.lr,
+    weight_decay=CFG.wd,
+)
+scheduler = ReduceLROnPlateau(
+    optimizer,
+    'min',
+    patience=150,
+    factor=0.1,
+    min_lr=1e-8
+)
 
 logs = defaultdict(list)
 
@@ -57,14 +58,18 @@ for epoch in (range(CFG.n_epochs + 1)):
     avg_loss = 0
     train_targets, train_preds = [], []
     if epoch != 0:
-        for sentence, label, sent_lens in track(train_loader,
-                                                description="Training...",
-                                                total=len(train_loader),
-                                                transient=True):
+        for sentence, label, sent_lens in track(
+                train_loader,
+                description="Training...",
+                total=len(train_loader),
+                transient=True,
+            ):
             model.zero_grad()
             scores = model(sentence)
-            loss = loss_function(scores.view(-1, scores.shape[-1]),
-                                label.view(-1))
+            loss = loss_function(
+                scores.view(-1, scores.shape[-1]),
+                label.view(-1)
+            )
             loss.backward()
             optimizer.step()
             avg_loss += loss.item() / len(train_loader)
@@ -74,13 +79,17 @@ for epoch in (range(CFG.n_epochs + 1)):
     model.eval()
     avg_val_loss = 0
     val_targets, val_preds = [], []
-    for sentence, label, sent_lens in track(test_loader,
-                                            description="Validating...",
-                                            total=len(test_loader),
-                                            transient=True):
+    for sentence, label, sent_lens in track(
+            test_loader,
+            description="Validating...",
+            total=len(test_loader),
+            transient=True,
+        ):
         scores = model(sentence)
-        avg_val_loss += loss_function(scores.view(-1, scores.shape[-1]),
-                                    label.view(-1)).item() / len(test_loader)
+        avg_val_loss += loss_function(
+            scores.view(-1, scores.shape[-1]),
+            label.view(-1)
+            ).item() / len(test_loader)
         val_targets.extend(flatten(label, sent_lens))
         val_preds.extend(flatten(scores.argmax(axis=-1), sent_lens))
 

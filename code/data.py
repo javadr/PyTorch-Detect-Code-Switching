@@ -110,9 +110,6 @@ class CodeSwitchDataset(Dataset):
 train_dataset = CodeSwitchDataset(Data.train_sentences['tokens'], Data.train_sentences['labels'])
 test_dataset = CodeSwitchDataset(Data.test_sentences['tokens'], Data.test_sentences['labels'])
 
-def word_encode(word):
-    x = torch.zeros(CFG.pad_length)
-
 def collate_fn(batch):
     x,y = zip(*batch) # makes all sentences into x and all labels into y
     sent_lens = torch.LongTensor([len(s) for s in x]).to(device)

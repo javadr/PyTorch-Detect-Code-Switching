@@ -2,6 +2,10 @@ TODO:
  * fine tunning to find the best parameters
  * tensorboardX
 
+===================================================================== Jul 10, 2023
+ * With the recent version of Pandas, `read_csv` should be loaded with the parameter
+ `keep_default_na=False` to prevent reading `None` as `NaN`, as 'None' is a word in normal English.
+
 ===================================================================== Oct 12, 2022
  * Make reproducible output by fixing seed for torch and numpy
 

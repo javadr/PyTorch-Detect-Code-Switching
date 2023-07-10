@@ -1,15 +1,19 @@
+#!/usr/bin/env python3
+
 import re
-import numpy as np
-import pandas as pd
+import sys
 from collections import Counter
 from dataclasses import dataclass
 
+import numpy as np
+import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+from torch.utils.data import DataLoader, Dataset
 from config import CFG
+import utils
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # To make a reproducible output
 np.random.seed(CFG.seed)
@@ -26,7 +30,9 @@ class Data:
             quoting=3,
             encoding='utf8',
             header=None,
-            names=['tweet_id', 'user_id', 'start', 'end', 'token', 'label'])
+            names=['tweet_id', 'user_id', 'start', 'end', 'token', 'label'],
+            keep_default_na=False,
+        )
         df['token'] = df['token'].apply(lambda t: re.sub(r'(.)\1{4,}',r'\1\1\1\1', t)[:CFG.pad_length])
         df['tuple'] = list(zip(df['token'], df['label']))
         tokens = df.groupby('tweet_id')['token'].apply(list).reset_index().set_index('tweet_id')
@@ -39,7 +45,7 @@ class Data:
     test, test_sentences = readtsv("dev_data.tsv")
 
     # list of all characters in the vocabulary
-    Chars = sorted(set(Counter(''.join(train.token.values.tolist())))) #| set(Counter(''.join(test.token.values.tolist())))
+    Chars = sorted( set(Counter(''.join(train.token.values.tolist()))) )
 
     # list of all tokens and labels(=languages)
     tokens = sorted(set(train.token.values))
@@ -111,16 +117,33 @@ def collate_fn(batch):
     x,y = zip(*batch) # makes all sentences into x and all labels into y
     sent_lens = torch.LongTensor([len(s) for s in x]).to(device)
     x,y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
-    x = pad_sequence([torch.LongTensor(i).to(device) for i in x], batch_first=True)
-    y = pad_sequence([torch.LongTensor(i).to(device) for i in y], batch_first=True, padding_value=Data.label_vocab_size)
+    x = pad_sequence(
+        [torch.LongTensor(i).to(device) for i in x],
+        batch_first=True,
+    )
+    y = pad_sequence(
+        [torch.LongTensor(i).to(device) for i in y],
+        batch_first=True,
+        padding_value=Data.label_vocab_size,
+    )
     return x.to(device), y.to(device), sent_lens
 
-train_loader = DataLoader(train_dataset, batch_size=CFG.batch_size,
-                        shuffle=True, collate_fn=collate_fn, num_workers=0)
-test_loader = DataLoader(test_dataset, batch_size=CFG.batch_size,
-                        shuffle=False, collate_fn=collate_fn, num_workers=0)
+kwargs = {
+    'batch_size':CFG.batch_size,
+    'collate_fn':collate_fn,
+    'num_workers':0,
+}
 
-import utils
+train_loader = DataLoader(
+    train_dataset,
+    shuffle=True,
+    **kwargs,
+)
+test_loader = DataLoader(
+    test_dataset,
+    shuffle=False,
+    **kwargs,
+)
 
 if __name__ == "__main__":
     # for sent, lbl, _ in train_loader:
@@ -140,7 +163,7 @@ if __name__ == "__main__":
         # print(sent, lab, sent_lens, sep='\n')
         for item in utils.flatten(lab, sent_lens):
             print(item, end=', ')
-        exit()
+        sys.exit()
     # print('\n')
     # for sent, lab, _ in test_loader:
     #     print(lab.shape[1], end=' ')

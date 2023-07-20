@@ -6,14 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import torch
+
 from sklearn.metrics import (
-    accuracy_score, classification_report,
-    confusion_matrix, f1_score,
-    )
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+)
 
-from config import CFG
 from data import Data, test_loader
-
+from config import CFG
 
 def res_plot(data, desc="", p=3):
     legend=["Train","Test"]
@@ -64,7 +66,7 @@ def res_plot(data, desc="", p=3):
         ax.plot([notch, len(data[f"val_{t}"])], [notch, notch], "gray")
         ax.annotate(f"{notch:.4f}", xy=(1,notch), ha="right", c="black")
         ax.legend()
-    metric_name = f'../images/plot[{datetime.now().strftime("%y%m%d%H%M")}]-Ep{epochs}B{CFG.batch_size}{desc}.png'
+    metric_name = f'../images/plot[{datetime.now().strftime("%y%m%d%H%M")}]-Ep{epochs}B{CFG.batch_size}{desc}.png' # noqa: E501
     fig.suptitle(desc, fontsize=16)
     fig.savefig(metric_name, bbox_inches="tight", dpi=100)
     plt.show()
@@ -75,7 +77,7 @@ def flatten(tensor, sent_lens=None):
         return tensor.view(-1).detach().cpu().numpy()
     # else
     return torch.cat(
-                [tensor[i,:l] for i, l in enumerate(sent_lens)],
+                [tensor[i,:length] for i, length in enumerate(sent_lens)],
             ).detach().cpu().numpy()
 
 def evaluation(y_true, y_pred, metrics):

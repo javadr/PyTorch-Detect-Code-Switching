@@ -33,7 +33,9 @@ class Data:
             names=["tweet_id", "user_id", "start", "end", "token", "label"],
             keep_default_na=False,
         )
-        df["token"] = df["token"].apply(lambda t: re.sub(r"(.)\1{4,}",r"\1\1\1\1", t)[:CFG.pad_length])
+        df["token"] = df["token"].apply(
+            lambda t: re.sub(r"(.)\1{4,}",r"\1\1\1\1", t)[:CFG.pad_length] # noqa: COM812
+        )
         df["tuple"] = list(zip(df["token"], df["label"]))
         tokens = df.groupby("tweet_id")["token"].apply(list).reset_index().set_index("tweet_id")
         labels = df.groupby("tweet_id")["label"].apply(list).reset_index().set_index("tweet_id")

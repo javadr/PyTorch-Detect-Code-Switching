@@ -4,14 +4,16 @@ import warnings
 from collections import defaultdict
 from datetime import datetime
 
+import numpy as np
 import torch
+
 from torch import nn
 from torch import optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from rich import print
 from rich.progress import track
 
-from utils import *
+from utils import flatten, res_plot, cls_report, evaluation
 from config import CFG
 from char2vec import BiLSTMtagger
 from data import Data, test_loader, train_loader
@@ -103,7 +105,7 @@ for epoch in (range(CFG.n_epochs + 1)):
 
     if epoch <= 5 or epoch % 10 == 0:
         print(
-            f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}",
+            f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}", # noqa: E501
             f",f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}",
             f",,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}",
         )

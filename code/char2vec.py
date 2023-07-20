@@ -17,7 +17,7 @@ class Char2Vec(nn.Module):
             self,
             char_vocab_size: int,
             out_ch1: int = CFG.out_ch1,
-            out_ch2: int = CFG.out_ch2
+            out_ch2: int = CFG.out_ch2,
         ):
         super().__init__()
         embed_dim = int(np.log2(char_vocab_size)) + 1
@@ -36,7 +36,7 @@ class Char2Vec(nn.Module):
                     nn.ReLU(),
                 )
                 for k in [3, 4, 5]
-            ]
+            ],
         )
         self.linear = nn.Sequential(
             nn.Linear(out_ch2, out_ch2),
@@ -59,7 +59,7 @@ class BiLSTMtagger(nn.Module):
             char_vocab_size: int,
             embedding_dim: int,
             hidden_dim: int,
-            target_size: int
+            target_size: int,
         ):
         super().__init__()
         self.hidden_dim = hidden_dim
@@ -70,7 +70,7 @@ class BiLSTMtagger(nn.Module):
             num_layers  = 2,
             batch_first = True,
             bidirectional = True,
-            dropout     = 0.3
+            dropout     = 0.3,
         )
         self.hidden2tag = nn.Linear(hidden_dim*2, target_size)
 

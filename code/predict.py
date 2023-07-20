@@ -10,7 +10,7 @@ from rich import print
 from config import CFG
 from data import Data
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 warnings.filterwarnings("ignore")
 
 # To make a reproducible output
@@ -48,5 +48,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     labels = predict(args)
 
-    print(f'input : {args.text}')
+    print(f"input : {args.text}")
     print(f'prediction : {" ".join(labels)}')

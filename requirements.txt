@@ -1,7 +1,8 @@
 numpy
 pandas
 rich
-sklearn
+seaborn
+scikit-learn
 tqdm
 torch
 argparse

@@ -107,7 +107,7 @@ for epoch in (range(CFG.n_epochs + 1)):
         print(
             f"Epoch {epoch:{width}}/{CFG.n_epochs}, loss={avg_loss:.4f}, val_loss={avg_val_loss:.4f}", # noqa: E501
             f",f1={train_eval['f1']:.4f}, val_f1={val_eval['f1']:.4f}",
-            f",,acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}",
+            f",acc={train_eval['accuracy']:.4f}, val_acc={val_eval['accuracy']:.4f}",
         )
 
     if epoch != 0:

@@ -1,6 +1,7 @@
 TODO:
- * fine tunning to find the best parameters
- * tensorboardX
+ [] fine tunning to find the best parameters
+ [] tensorboardX
+ [] Prediction GUI
 
 ===================================================================== Jul 10, 2023
  * With the recent version of Pandas, `read_csv` should be loaded with the parameter

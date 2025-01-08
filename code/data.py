@@ -25,7 +25,7 @@ class Data:
 
     def readtsv(file):
         df = pd.read_csv(
-            f"../data/{file}",
+            CFG.data_path / f"{file}",
             sep="\t",
             quoting=3,
             encoding="utf8",

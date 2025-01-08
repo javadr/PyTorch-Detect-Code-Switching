@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         type=str,
-        default="../saved-models/bestmodel.pth",
+        default=CFG.saved_models_path / "bestmodel.pth",
         help="path for pre-trained model",
     )
     parser.add_argument(
@@ -45,6 +45,7 @@ if __name__ == "__main__":
         help="text string",
     )
 
+    assert (CFG.saved_models_path/"bestmodel.pth").exists(), "Please train the model first!"
     args = parser.parse_args()
     labels = predict(args)
 

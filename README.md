@@ -63,8 +63,8 @@ The gold labels can be one of three:
     ```bash
     cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|R --slave -e 'x <- scan(file="stdin", quiet=TRUE,  what=list(numeric(), numeric())); png("Histogram of tokens length-train.png");plot(x[[1]],x[[2]], xlab="length", ylab="frequency", main="Train");'
     ```
-    <img src="./images/Histogram%20of%20token%20length-train.png" alt="token length distribution in training set" width="45%"/>
-    <img src="./images/Histogram%20of%20token%20length-dev.png" alt="token length distribution in dev set" width="45%"/>
+    <img src="./Results/images/Histogram%20of%20token%20length-train.png" alt="token length distribution in training set" width="45%"/>
+    <img src="./Results/images/Histogram%20of%20token%20length-dev.png" alt="token length distribution in dev set" width="45%"/>
 
     It is evident that both data sets have the same distribution of tokens' lengths with a slight shift. There are several outliers in both datasets as users tend to repeat the characters on social media. The weighted average tokens' lengths for the training and test sets are `3.93` and `4.11`, respectively. I've used the following to compute these numbers:
     ```bash
@@ -175,7 +175,7 @@ python predict.py --model pretrained_model.pth --text="@lililium This is an audi
 
  Running the model on the Google Colab with `Tesla T4 GPU` and 100 epochs, achieved the `validation f1-score` of `0.92`.
 
- ![plot](./images/plot[2207191218]-Ep100B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
+ ![plot](./Results/images/plot[2207191218]-Ep100B64BiLSTM+Char2Vec,%202Layers,%20Adam,%20lre-3,%20wde-5.png)
 
 ### classification Report
 
@@ -192,8 +192,9 @@ weighted avg       0.94      0.94      0.94      9583
 ```
 
 ### Confusion Matrix
-<img src="./images/ConfusionMatrix.png" alt="confusion matrix" width="45%"/>
+<img src="./Results/images/ConfusionMatrix.png" alt="confusion matrix" width="45%"/>
 
 ## TODO
  - [ ] Data augmentation
  - [ ] Fine tunning the model to find the best hyper-parameters
+ - [ ] Prediction GUI

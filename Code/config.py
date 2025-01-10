@@ -18,7 +18,7 @@ class CFG:
         3 * 5
     )  # dividable by 3, as we have 3 different kernel sizes concatenated together
     working_dir: Path = Path(__file__).parent.parent
-    data_path: Path = working_dir / "data"
+    data_path: Path = working_dir / "Data"
     result_path: Path = working_dir / "Results"
     saved_models_path: Path = result_path / "saved-models"
     images_path: Path = result_path / "images"

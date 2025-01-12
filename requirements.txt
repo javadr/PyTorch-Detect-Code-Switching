@@ -6,3 +6,4 @@ scikit-learn
 tqdm
 torch
 argparse
+streamlit[standard]

@@ -19,10 +19,10 @@ torch.manual_seed(CFG.seed)
 torch.cuda.manual_seed_all(CFG.seed)
 
 
-def predict(args):
-    model = torch.load(args.model, map_location=torch.device(device))
+def predict(model_path:str, text:str):
+    model = torch.load(model_path, map_location=torch.device(device))
     model.eval()
-    tokens = args.text.split()
+    tokens = text.split()
     x = Data.embedding_s(Data.chr2id, [tokens])
     out = model(torch.LongTensor(x).to(device)).argmax(dim=-1)[0].tolist()
     labels = [Data.id2lbl[i] for i in out]
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     assert (CFG.saved_models_path / "bestmodel.pth").exists(), "Please train the model first!"
     args = parser.parse_args()
-    labels = predict(args)
+    labels = predict(args.model, args.text)
 
     print(f"input : {args.text}")
     print(f'prediction : {" ".join(labels)}')

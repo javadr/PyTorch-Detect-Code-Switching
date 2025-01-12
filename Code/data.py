@@ -20,9 +20,9 @@ np.random.seed(CFG.seed)
 torch.manual_seed(CFG.seed)
 torch.cuda.manual_seed_all(CFG.seed)
 
+
 @dataclass
 class Data:
-
     def readtsv(file):
         df = pd.read_csv(
             CFG.data_path / f"{file}",
@@ -34,12 +34,12 @@ class Data:
             keep_default_na=False,
         )
         df["token"] = df["token"].apply(
-            lambda t: re.sub(r"(.)\1{4,}",r"\1\1\1\1", t)[:CFG.pad_length] # noqa: COM812
+            lambda t: re.sub(r"(.)\1{4,}", r"\1\1\1\1", t)[: CFG.pad_length]  # noqa: COM812
         )
         df["tuple"] = list(zip(df["token"], df["label"]))
         tokens = df.groupby("tweet_id")["token"].apply(list).reset_index().set_index("tweet_id")
         labels = df.groupby("tweet_id")["label"].apply(list).reset_index().set_index("tweet_id")
-        sentences = pd.concat([tokens, labels], axis=1).rename(lambda c: c+"s", axis="columns")
+        sentences = pd.concat([tokens, labels], axis=1).rename(lambda c: c + "s", axis="columns")
 
         return df, {"tokens": sentences["tokens"].values, "labels": sentences["labels"].values}
 
@@ -47,44 +47,51 @@ class Data:
     test, test_sentences = readtsv("dev_data.tsv")
 
     # list of all characters in the vocabulary
-    Chars = sorted( set(Counter("".join(train.token.values.tolist()))) )
+    Chars = sorted(set(Counter("".join(train.token.values.tolist()))))
 
     # list of all tokens and labels(=languages)
     tokens = sorted(set(train.token.values))
     labels = sorted(set(train.label.values))
 
     # token to index and vice versa
-    tok2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
+    tok2id = {"<PAD>": 0, "<UNK>": 1, "<S>": 2, "</S>": 3}
     tok2id.update({t: i + 4 for i, t in enumerate(tokens)})
-    id2tok = {i: t for t,i in tok2id.items()}
+    id2tok = {i: t for t, i in tok2id.items()}
     # label to index and vice versa
     # lbl2id = {"<PAD>":0}
     lbl2id = {label: i for i, label in enumerate(labels)}
-    lbl2id.update({"<PAD>":len(lbl2id)})
-    id2lbl = {i: label for label,i in lbl2id.items()}
+    lbl2id.update({"<PAD>": len(lbl2id)})
+    id2lbl = {i: label for label, i in lbl2id.items()}
     # character to index and vice versa
-    chr2id = {"<PAD>":0, "<UNK>":1, "<S>":2, "</S>":3}
+    chr2id = {"<PAD>": 0, "<UNK>": 1, "<S>": 2, "</S>": 3}
     chr2id.update({char: i + 4 for i, char in enumerate(Chars)})
-    id2chr = {i: char for char,i in chr2id.items()}
+    id2chr = {i: char for char, i in chr2id.items()}
 
     # vocabulary size
     char_vocab_size = len(chr2id)
     token_vocab_size = len(tok2id)
-    label_vocab_size = len(lbl2id)-1
+    label_vocab_size = len(lbl2id) - 1
 
-
-    embedding_s = lambda dic, data: [[ [dic["<S>"]]+[dic.get(c,1) for c in w]+[dic["</S>"]]\
-            +[0]*(CFG.pad_length-len(w)+1) for w in sent ] for sent in data ]
-    embedding = lambda dic, data: [[dic.get(t,1) for t in s] for s in data]
+    embedding_s = lambda dic, data: [
+        [
+            [dic["<S>"]]
+            + [dic.get(c, 1) for c in w]
+            + [dic["</S>"]]
+            + [0] * (CFG.pad_length - len(w) + 1)
+            for w in sent
+        ]
+        for sent in data
+    ]
+    embedding = lambda dic, data: [[dic.get(t, 1) for t in s] for s in data]
 
     X_train_sentences_emb = embedding(tok2id, train_sentences["tokens"])
-    X_test_sentences_emb  = embedding(tok2id, test_sentences["tokens"])
+    X_test_sentences_emb = embedding(tok2id, test_sentences["tokens"])
     Y_train_sentences_emb = embedding(lbl2id, train_sentences["labels"])
-    Y_test_sentences_emb  = embedding(lbl2id, test_sentences["labels"])
+    Y_test_sentences_emb = embedding(lbl2id, test_sentences["labels"])
 
     @staticmethod
     def decipher_text(encoded_text):
-        return " ".join([Data.id2tok.get(e,1) for e in encoded_text])
+        return " ".join([Data.id2tok.get(e, 1) for e in encoded_text])
 
     @staticmethod
     def decipher_label(encoded_label):
@@ -92,7 +99,7 @@ class Data:
 
     @staticmethod
     def encode_text(text):
-        return [[Data.chr2id.get(c,1) for c in token] for token in text.split(" ")]
+        return [[Data.chr2id.get(c, 1) for c in token] for token in text.split(" ")]
 
 
 class CodeSwitchDataset(Dataset):
@@ -109,13 +116,15 @@ class CodeSwitchDataset(Dataset):
             idx = idx.item()
         return self.X[idx], self.Y[idx]
 
+
 train_dataset = CodeSwitchDataset(Data.train_sentences["tokens"], Data.train_sentences["labels"])
 test_dataset = CodeSwitchDataset(Data.test_sentences["tokens"], Data.test_sentences["labels"])
 
+
 def collate_fn(batch):
-    x,y = zip(*batch) # makes all sentences into x and all labels into y
+    x, y = zip(*batch)  # makes all sentences into x and all labels into y
     sent_lens = torch.LongTensor([len(s) for s in x]).to(device)
-    x,y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
+    x, y = Data.embedding_s(Data.chr2id, x), Data.embedding(Data.lbl2id, y)
     x = pad_sequence(
         [torch.LongTensor(i).to(device) for i in x],
         batch_first=True,
@@ -127,10 +136,11 @@ def collate_fn(batch):
     )
     return x.to(device), y.to(device), sent_lens
 
+
 kwargs = {
-    "batch_size":CFG.batch_size,
-    "collate_fn":collate_fn,
-    "num_workers":0,
+    "batch_size": CFG.batch_size,
+    "collate_fn": collate_fn,
+    "num_workers": 0,
 }
 
 train_loader = DataLoader(

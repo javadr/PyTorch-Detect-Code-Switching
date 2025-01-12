@@ -18,6 +18,7 @@ np.random.seed(CFG.seed)
 torch.manual_seed(CFG.seed)
 torch.cuda.manual_seed_all(CFG.seed)
 
+
 def predict(args):
     model = torch.load(args.model, map_location=torch.device(device))
     model.eval()
@@ -31,7 +32,8 @@ def predict(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        "Testing a pretrained Character Based CNN+BiLSTM for Code-Switching")
+        "Testing a pretrained Character Based CNN+BiLSTM for Code-Switching"
+    )
     parser.add_argument(
         "--model",
         type=str,
@@ -45,7 +47,7 @@ if __name__ == "__main__":
         help="text string",
     )
 
-    assert (CFG.saved_models_path/"bestmodel.pth").exists(), "Please train the model first!"
+    assert (CFG.saved_models_path / "bestmodel.pth").exists(), "Please train the model first!"
     args = parser.parse_args()
     labels = predict(args)
 

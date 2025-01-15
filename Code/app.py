@@ -58,10 +58,8 @@ def main():
     st.markdown("""
     This application uses a Character Based CNN+BiLSTM model for Code-Switching prediction in text. 
     Enter a sentence or paragraph below to see the result.
-    - **English**: Gold
-    - **Spanish**: Orange Red
-    - **Other**: Sky Blue
     """)
+    st.markdown(colorize_tokens(["English", "Spanish", "Other"], ["en", "es", "other"]), unsafe_allow_html=True)  # Render the HTML
 
     # Input Text
     user_input = st.text_area("Enter text to analyze:", height=100)

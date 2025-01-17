@@ -1,9 +1,10 @@
+argparse
+nltk
 numpy
 pandas
 rich
-seaborn
 scikit-learn
-tqdm
-torch
-argparse
+seaborn
 streamlit[standard]
+torch
+tqdm

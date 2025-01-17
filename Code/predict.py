@@ -9,7 +9,9 @@ from rich import print
 
 from config import CFG
 from data import Data
+from nltk.tokenize import TweetTokenizer
 
+tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True, strip_handles=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 warnings.filterwarnings("ignore")
 
@@ -22,7 +24,7 @@ torch.cuda.manual_seed_all(CFG.seed)
 def predict(model_path: str, text: str):
     model = torch.load(model_path, map_location=torch.device(device), weights_only=False)
     model.eval()
-    tokens = text.split()
+    tokens = tokenizer.tokenize(text)
     x = Data.embedding_s(Data.chr2id, [tokens])
     out = model(torch.LongTensor(x).to(device)).argmax(dim=-1)[0].tolist()
     labels = [Data.id2lbl[i] for i in out]

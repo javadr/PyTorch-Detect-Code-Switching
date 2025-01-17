@@ -29,8 +29,8 @@ pattern = r"(https?://\S+|@\w+|#\w+|[\w’]+|[^\s\w])"
 # Function to predict code-switching
 def predict_code_switching(text):
     """Predict if the input text exhibits code-switching behavior."""
-    # Preprocess the text (if needed)
-    # This is a placeholder. Replace with your actual preprocessing logic.
+
+    # Tokenize the input text
     tokens = tokenizer.tokenize(text)
 
     x = Data.embedding_s(Data.chr2id, [tokens])
@@ -41,9 +41,9 @@ def predict_code_switching(text):
 
 # Map language tags to colors
 LANGUAGE_COLORS = {
-    "en": "#FFD700",  # Gold
-    "es": "#FF4500",  # Orange Red
-    "other": "#87CEEB",  # Sky Blue
+    "en": "#008080",  # Teal
+    "es": "#6A5ACD",  # Slate Blue
+    "other": "#DC143C",  # Crimson
 }
 
 
@@ -82,6 +82,7 @@ def main():
                     line = line.strip()
                     if not line:
                         continue
+
                     # Predict
                     tokens, labels = predict_code_switching(line)
 

@@ -5,7 +5,9 @@ import torch
 
 from config import CFG
 from data import Data
+from nltk.tokenize import TweetTokenizer
 
+tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True, strip_handles=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # To make a reproducible output
@@ -21,12 +23,16 @@ def load_model(model_path):
     return model
 
 
+pattern = r"(https?://\S+|@\w+|#\w+|[\w’]+|[^\s\w])"
+
+
 # Function to predict code-switching
 def predict_code_switching(text):
     """Predict if the input text exhibits code-switching behavior."""
     # Preprocess the text (if needed)
     # This is a placeholder. Replace with your actual preprocessing logic.
-    tokens = text.split()
+    tokens = tokenizer.tokenize(text)
+
     x = Data.embedding_s(Data.chr2id, [tokens])
     out = model(torch.LongTensor(x).to(device)).argmax(dim=-1)[0].tolist()
     labels = [Data.id2lbl[i] for i in out]
@@ -59,7 +65,10 @@ def main():
     This application uses a Character Based CNN+BiLSTM model for Code-Switching prediction in text. 
     Enter a sentence or paragraph below to see the result.
     """)
-    st.markdown(colorize_tokens(["English", "Spanish", "Other"], ["en", "es", "other"]), unsafe_allow_html=True)  # Render the HTML
+    st.markdown(
+        colorize_tokens(["English", "Spanish", "Other"], ["en", "es", "other"]),
+        unsafe_allow_html=True,
+    )  # Render the HTML
 
     # Input Text
     user_input = st.text_area("Enter text to analyze:", height=100)
@@ -68,15 +77,19 @@ def main():
     if st.button("Analyze"):
         if user_input.strip():
             with st.spinner("Analyzing..."):
-                # Predict
-                tokens, labels = predict_code_switching(user_input)
-
-                # Generate Colored Text
-                colored_text = colorize_tokens(tokens, labels)
-
-                # Display Results
                 st.subheader("Results:")
-                st.markdown(colored_text, unsafe_allow_html=True)  # Render the HTML
+                for line in user_input.strip().split("\n"):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    # Predict
+                    tokens, labels = predict_code_switching(line)
+
+                    # Generate Colored Text
+                    colored_text = colorize_tokens(tokens, labels)
+
+                    # Display Results
+                    st.markdown(colored_text, unsafe_allow_html=True)  # Render the HTML
 
         else:
             st.warning("Please enter text before clicking analyze.")

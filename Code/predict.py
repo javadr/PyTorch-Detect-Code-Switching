@@ -19,8 +19,8 @@ torch.manual_seed(CFG.seed)
 torch.cuda.manual_seed_all(CFG.seed)
 
 
-def predict(model_path:str, text:str):
-    model = torch.load(model_path, map_location=torch.device(device))
+def predict(model_path: str, text: str):
+    model = torch.load(model_path, map_location=torch.device(device), weights_only=False)
     model.eval()
     tokens = text.split()
     x = Data.embedding_s(Data.chr2id, [tokens])

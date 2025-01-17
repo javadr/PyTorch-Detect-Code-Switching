@@ -101,7 +101,7 @@ if __name__ == "__main__":
     # Ensure model path is correct
     model_path = CFG.saved_models_path / "bestmodel.pth"
     if model_path.exists():
-        model = torch.load(model_path, map_location=torch.device(device))
+        model = torch.load(model_path, map_location=torch.device(device), weights_only=False)
         main()
     else:
         st.error(f"Model file not found at {model_path}. Please check the path and try again.")

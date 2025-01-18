@@ -197,4 +197,4 @@ weighted avg       0.94      0.94      0.94      9583
 ## TODO
  - [ ] Data augmentation
  - [ ] Fine tunning the model to find the best hyper-parameters
- - [ ] Prediction GUI
+ - [X] Prediction GUI

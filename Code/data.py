@@ -75,7 +75,7 @@ class Data:
     embedding_s = lambda dic, data: [
         [
             [dic["<S>"]]
-            + [dic.get(c, 1) for c in w]
+            + [dic.get(c, 1) for c in w[: CFG.pad_length + 1]]  # truncate words to CFG.pad_length
             + [dic["</S>"]]
             + [0] * (CFG.pad_length - len(w) + 1)
             for w in sent

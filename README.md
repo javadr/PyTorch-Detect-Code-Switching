@@ -1,16 +1,16 @@
 # PyTorch-Detect-Code-Switching
 
-## [TL;DR ![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://javadr-pytorch-detect-code-switching-codeapp-wmvbur.streamlit.app/)
-The PyTorch-Detect-Code-Switching repository implements a BiLSTM model for detecting code-switching (language alternation in text). Using a dataset of annotated tweets (English, Spanish, and others), the model achieves over 90% precision, recall, and F1-scores. Ideal for multilingual NLP research. 
+## [TL;DR ![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pytorch-detect-code-switching-code.streamlit.app/)
+The PyTorch-Detect-Code-Switching repository implements a BiLSTM model for detecting code-switching (language alternation in text). Using a dataset of annotated tweets (English, Spanish, and others), the model achieves over 90% precision, recall, and F1 Scores. It is ideal for multilingual NLP research. 
 
 ## Task Description
-Currently, the research in NLP has been focusing on dealing with types of multilingual content. Thus, the first thing that we need to learn for working on different NLP tasks, such as Question Answering, is to identify the languages accurately on texts. This repository uses the idea behind the paper [A Neural Model for Language Identification in Code-Switched Tweets](https://homes.cs.washington.edu/~nasmith/papers/jaech+mulcaire+hathi+ostendorf+smith.lics16.pdf).
+Currently, research in NLP focuses on dealing with types of multilingual content. Thus, the first thing we need to learn for working on different NLP tasks, such as Question Answering, is to accurately identify the languages on texts. This repository uses the idea behind the paper [A Neural Model for Language Identification in Code-Switched Tweets](https://homes.cs.washington.edu/~nasmith/papers/jaech+mulcaire+hathi+ostendorf+smith.lics16.pdf).
 
 ## Data
 
 http://www.care4lang.seas.gwu.edu/cs2/call.html
 
-This data is a collection of tweets; in particular,three files for the training set and three for the validation set:
+This data is a collection of tweets; in particular, three files for the training set and three for the validation set:
 
 
 * `offsets_mod.tsv`:
@@ -62,7 +62,7 @@ The gold labels can be one of three:
     | :---: | :---: | :---: | :---: |
     | train | 14366 | 12220 | 50 |
     | dev | 2771 | 2559 | 28
-* The distribution of the length of the tokens are depicted below which are taken by the following one-liner linux command:
+* The distribution of the length of the tokens is depicted below which are taken by the following one-liner Linux command:
     ```bash
     cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|R --slave -e 'x <- scan(file="stdin", quiet=TRUE,  what=list(numeric(), numeric())); png("Histogram of tokens length-train.png");plot(x[[1]],x[[2]], xlab="length", ylab="frequency", main="Train");'
     ```
@@ -74,7 +74,7 @@ The gold labels can be one of three:
     cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|tr " " "*"|paste -sd+|bc -l
     ```
 
-### Preprocssing
+### Preprocessing
 * Some rows in `[train|dev]_data.csv` include `"` resulting weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.
 * I've also checked the availability of the Null in those files with the following command:
     ```bash

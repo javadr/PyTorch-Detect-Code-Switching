@@ -62,7 +62,7 @@ The gold labels can be one of three:
     | :---: | :---: | :---: | :---: |
     | train | 14366 | 12220 | 50 |
     | dev | 2771 | 2559 | 28
-* The distribution of the length of the tokens is depicted below which are taken by the following one-liner Linux command:
+* The distribution of the length of the tokens is depicted below, which are taken by the following one-liner Linux command:
     ```bash
     cut -f5 train_data.tsv|awk '{print length}'|sort -n |uniq -c|awk -F" " '{print $NF" " $(NF-1)}'|R --slave -e 'x <- scan(file="stdin", quiet=TRUE,  what=list(numeric(), numeric())); png("Histogram of tokens length-train.png");plot(x[[1]],x[[2]], xlab="length", ylab="frequency", main="Train");'
     ```
@@ -75,13 +75,13 @@ The gold labels can be one of three:
     ```
 
 ### Preprocessing
-* Some rows in `[train|dev]_data.csv` include `"` resulting weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.
+* Some rows in `[train|dev]_data.csv` include `"` resulting in a weird issue with `pandas.read_csv`. Actually, it reads the next lines till reaches another `"`, so I set `quotechar` option to `'\0'`(=NULL) in `pandas.read_csv` to solve this issue.
 * I've also checked the availability of the Null in those files with the following command:
     ```bash
     grep -Pa '\x00' data/train_data.tsv
     grep -Pa '\x00' data/dev_data.tsv
     ```
-* Another solution to the previous issue is the `quoting` option with `3` as its value which means `QUOTE_NONE`.
+* Another solution to the previous issue is the `quoting` option with `3` as its value, which means `QUOTE_NONE`.
 * As it is mentioned in the paper, the data contains many long and repetitive character sequences such as “hahahaha...”. To deal with these, we restricted any sequence of repeating characters to at most five repetitions with a maximum length of 20 for each token.
     ```python
     df['token'] = df['token'].apply(lambda t: re.sub(r'(.)\1{4,}',r'\1\1\1\1', t)[:20])
@@ -96,7 +96,7 @@ To use this method, you would proceed as:
 ```pip install -r requirements.txt```
 
 ## Model Architecture
-![Char2Vec](./images/Char2Vec.png)
+![Char2Vec](./Results/images/Char2Vec.png)
 ```python
 BiLSTMtagger(
   (word_embeddings): Char2Vec(
